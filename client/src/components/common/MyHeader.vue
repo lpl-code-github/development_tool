@@ -1,26 +1,32 @@
 <template>
   <div class="header">
-    <a-layout-header style="background: #fff; padding: 0;display: flex;justify-content: flex-end;align-items: center;">
-      <a-button icon="setting" :size="buttonSize" style="margin-right: 20px" :loading="loadingUpdateSystem">
-        更新本系统
-      </a-button>
-
-      <!--快捷开关-->
-      <a-popover title="开关" placement="topLeft" trigger="click" @click="handleQuickSwitch" :visible="popoverIsShow">
-        <template slot="content">
-          <SwitchComponent
-              v-for="(item,index) in switchComponentData"
-              :key="index"
-              :type="item.type"
-              :switch-text="item.switchText"
-              :tooltip-text="item.tooltipText"
-              :flag = "item.checked"
-          />
-        </template>
-        <a-button icon="setting" :size="buttonSize" style="margin-right: 20px">
-          快捷开关
+    <a-layout-header style="background: #fff; padding: 0;display: flex;justify-content: space-between;align-items: center;padding: 0 20px">
+      <div style="float: right">
+        <span style="font-size: medium;font-weight: bolder">RISKID开发者工具</span>
+      </div>
+      <div style="float: left">
+        <a-button icon="setting" :size="buttonSize" style="margin-right: 20px" :loading="loadingUpdateSystem">
+          更新本系统
         </a-button>
-      </a-popover>
+
+        <!--快捷开关-->
+        <a-popover title="开关" placement="topLeft" trigger="click" @click="handleQuickSwitch" :visible="popoverIsShow">
+          <template slot="content">
+            <SwitchComponent
+                v-for="(item,index) in switchComponentData"
+                :key="index"
+                :type="item.type"
+                :switch-text="item.switchText"
+                :tooltip-text="item.tooltipText"
+                :flag = "item.checked"
+            />
+          </template>
+          <a-button icon="setting" :size="buttonSize">
+            快捷开关
+          </a-button>
+        </a-popover>
+      </div>
+
     </a-layout-header>
 
 
@@ -28,15 +34,12 @@
 </template>
 
 <script>
-import ErrorMessageSwitch from "@/components/switch/ErrorMessageSwitch";
-import EvnSwitch from "@/components/switch/EvnSwitch";
-import TestControllerSwitch from "@/components/switch/TestControllerSwitch";
 import SwitchComponent from "@/components/switch/SwitchComponent";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'MyHeader',
-  components: {SwitchComponent, TestControllerSwitch, EvnSwitch, ErrorMessageSwitch},
+  components: {SwitchComponent},
   props: {
     msg: String
   },

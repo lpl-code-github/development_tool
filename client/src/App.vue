@@ -1,9 +1,9 @@
 <template>
   <div class="app">
-    <a-layout id="components-layout-demo-side" style="min-height: 100vh!important;">
+    <a-layout id="components-layout-demo-side" style="height: 100vh!important;">
       <a-layout-sider v-model="collapsed" collapsible>
         <div class="logo_img">
-          <img class="logo" src="./assets/r1_logo.png" style="background: none"/>
+          <img class="logo" src="./assets/r1_logo.png" style="background: none;width: 35%;height: auto"/>
         </div>
 
         <!--  导航栏 这里应该拆成组件 -->
@@ -30,7 +30,7 @@
         </a-menu>
 
       </a-layout-sider>
-      <a-layout style="height: 100vh">
+      <a-layout style="height: 100%;overflow-y: hidden">
         <!--  头部组件  -->
         <MyHeader></MyHeader>
 
@@ -43,10 +43,10 @@
             </a-breadcrumb-item>
           </a-breadcrumb>
 
-          <router-view style="height:100%;overflow-y: auto"></router-view>
+          <router-view style="height:95%;overflow-y: auto"></router-view>
         </a-layout-content>
-        <a-layout-footer style="text-align: center">
-          Ant Design ©2018 Created by Ant UED
+        <a-layout-footer style="text-align: center;height: 7%">
+          Development Tool ©2023 Created by Teamsupport ApiTeam
         </a-layout-footer>
       </a-layout>
     </a-layout>
@@ -115,7 +115,6 @@ export default {
     findTextByKey(key) {
       let result = [];
       // 在simpleSidebarData中查找
-      console.log(key)
       for (let item of this.simpleSidebarData) {
         if (item.key === key) {
           result.push(item.text);
@@ -166,7 +165,7 @@ export default {
 
 }
 .app{
-  max-height: 100vh;
+  max-height: 100vh!important;
   overflow-y: hidden;
 }
 </style>

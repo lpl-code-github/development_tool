@@ -96,9 +96,6 @@ export default {
 .notes-month section {
   font-size: 28px;
 }
-.index{
-  height: 100%;
-}
 /deep/ .ant-radio-group {
   display: none!important;
 }
