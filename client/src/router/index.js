@@ -11,7 +11,10 @@ Vue.use(Router)
 //使用ES提出的方法：路由懒加载，优化前端页面
 const routes = [
     {
-        path: '/', redirect: '/script',
+        path: '/', redirect: '/index',
+    },
+    {
+        path: '/index', component: () => import('@/Index')
     },
     {
         path: '/script', component: () => import('@/views/Script')
