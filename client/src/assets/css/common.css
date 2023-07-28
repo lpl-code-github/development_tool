@@ -1,0 +1,20 @@
+/* 公共css */
+* {
+    box-sizing: border-box;
+
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+
+}
+
+a {
+    /*text-decoration: none;*/
+    color: #333;
+}
+
+.my-switch{
+    margin-top: 10px;
+}
