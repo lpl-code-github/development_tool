@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    <a-calendar :locale="locale" :value="selectValue" @select="onSelect">
+    <a-calendar :locale="locale" @select="onSelect">
       <ul slot="dateCellRender" slot-scope="value" class="events" >
         <li v-for="item in getListData(value)" :key="item.content">
           <a-badge :status="item.type" :text="item.content" />
@@ -25,7 +25,6 @@ export default {
   data(){
     return{
       locale:zhCN,//传值给a-config-provider组件
-      selectValue: null,
     }
   },
   methods: {
