@@ -7,8 +7,11 @@
         </div>
 
         <!--  导航栏 这里应该拆成组件 -->
-        <a-menu theme="dark" v-model="selectedKeys" :default-selected-keys="defaultSelectedKeys" mode="inline"
-                :forceSubMenuRender="true"
+        <a-menu theme="dark" :defaultOpenKeys="defaultOpenKeys"
+                :selectedKeys="selectedKeys"
+                :default-selected-keys="defaultSelectedKeys"
+                mode="inline"
+
         >
           <!-- 一级菜单 -->
           <a-menu-item v-for="item in simpleSidebarData" :key="item.key">
@@ -17,7 +20,7 @@
             <span>{{ item.text }}</span>
           </a-menu-item>
           <!-- 多级菜单 -->
-          <a-sub-menu v-for="item in subSidebarData" :key="item.key">
+          <a-sub-menu v-for="item in subSidebarData" :key="item.key"  >
             <span slot="title">
               <a-icon :type="item.icon"/>
               <span>{{ item.text }}</span>
@@ -62,7 +65,7 @@ export default {
   data() {
     return {
       collapsed: false,
-      defaultSelectedKeys: ['1'],
+      defaultSelectedKeys: [],
       breadcrumb: [],
       selectedKeys: [],
       simpleSidebarData: [
@@ -104,14 +107,35 @@ export default {
             {key: "5-2", text: "Slate生成器", link: "/slate-generator"}
           ]
         }
-      ]
+      ],
+      defaultOpenKeys:[],
+      routeName:""
     };
   },
+  mounted() {
+  },
   created() {
-    this.selectedKeys = this.defaultSelectedKeys;
-    this.breadcrumb = [this.simpleSidebarData[0].text]
+    if (this.defaultSelectedKeys === null){
+      this.defaultSelectedKeys = ['1']
+      this.selectedKeys = defaultSelectedKeys;
+      this.breadcrumb = [this.simpleSidebarData[0].text]
+    }else {
+      this.menuChecked()
+    }
   },
   methods: {
+    menuChecked(){
+      var path = sessionStorage.getItem('development-tool-path');
+      this.defaultSelectedKeys = this.findKeyByLink(path)
+      this.selectedKeys = this.defaultSelectedKeys;
+      var tempBreadcrumb = []
+      this.selectedKeys.forEach(item=>{
+        tempBreadcrumb = this.findTextByKey(item)
+      })
+      this.defaultOpenKeys =[this.selectedKeys[0]]
+
+      this.breadcrumb = tempBreadcrumb
+    },
     findTextByKey(key) {
       let result = [];
       // 在simpleSidebarData中查找
@@ -138,13 +162,44 @@ export default {
         }
       }
       return result;
-    }
+    },
+    findKeyByLink(link) {
+      let result = [];
+      // 在simpleSidebarData中查找
+      for (let item of this.simpleSidebarData) {
+        if (item.link === link) {
+          result.push(item.key);
+          break;
+        }
+      }
+      // 在subSidebarData中查找
+      for (let item of this.subSidebarData) {
+        if (item.link === link) {
+          result.push(item.key);
+          break;
+        }
+        if (item.children && item.children.length > 0) {
+          for (let child of item.children) {
+            if (child.link === link) {
+              result.push(item.key);
+              result.push(child.key);
+              break;
+            }
+          }
+        }
+      }
+      return result;
+    },
+
   },
   watch: {
-    selectedKeys: {
-      handler(newVal) {
-        this.breadcrumb = this.findTextByKey(newVal[0]);
+    $route: {
+      handler: function (newVal,oldVal) {
+        const path = newVal.path;
+        sessionStorage.setItem('development-tool-path',path)
+        this.menuChecked()
       },
+      // 深度观察监听
       deep: true
     }
   },
@@ -164,8 +219,9 @@ export default {
   justify-content: center !important;
 
 }
-.app{
-  max-height: 100vh!important;
+
+.app {
+  max-height: 100vh !important;
   overflow-y: hidden;
 }
 </style>
