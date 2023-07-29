@@ -1,8 +1,9 @@
 <template>
   <div class="my-script">
+    <AddScript @updateModelStatus="getModelStatus" :open-flag="openAddScriptModel"></AddScript>
     <div class="my-s-button">
       <a-input-search placeholder="输入脚本名或描述搜索" style="width: 200px" @search="onSearch"/>
-      <a-button type="primary">
+      <a-button type="primary" @click="addScript">
         添加
       </a-button>
     </div>
@@ -17,7 +18,11 @@
             {{ t.text }}
           </a-tag>
         </span>
-        <a slot="action" slot-scope="text" href="javascript:;">删除</a>
+        <span slot="action" slot-scope="text, record">
+          <a style="color: #2c982c">运行</a>
+          <a-divider type="vertical" style="background-color: #a8a7a7!important;"/>
+          <a style="color: #f17878">删除</a>
+        </span>
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
           {{ record.description }}
         </p>
@@ -27,9 +32,11 @@
 </template>
 
 <script>
+import AddScript from "@/components/Script/AddScript";
+
 export default {
   name: "Script",
-
+  components: {AddScript},
   data() {
     return {
       columns: [
@@ -49,6 +56,7 @@ export default {
       tableData: [],
       filteredTags: [],
       tagsFilterDropdownVisible: false,
+      openAddScriptModel: false
     }
   },
   created() {
@@ -60,7 +68,7 @@ export default {
     },
     handleChange(pagination, filters) {
       var tagFilterChecked = filters.tags
-      if (filters.tags.length === 0){
+      if (filters.tags.length === 0) {
         this.tableData = this.scriptData
         return
       }
@@ -144,7 +152,14 @@ export default {
         }
       })
       this.tableData = this.scriptData
-    }
+    },
+    addScript() {
+      this.openAddScriptModel = true
+    },
+
+    getModelStatus(status) {
+      this.openAddScriptModel = status
+    },
   }
 }
 </script>
