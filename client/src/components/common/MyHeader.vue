@@ -95,12 +95,15 @@ export default {
         }else {
           this.popoverIsShow = true
           var data = res.data.data
-          this.switchComponentData.forEach(componentDataItem => {
+          var temp = this.switchComponentData
+          temp.forEach(componentDataItem => {
             const responseItem = data.find(item => item.type === componentDataItem.type);
             if (responseItem) {
               componentDataItem.checked = responseItem.checked;
             }
           });
+          this.switchComponentData = temp
+          console.log(this.switchComponentData)
         }
       })
     },

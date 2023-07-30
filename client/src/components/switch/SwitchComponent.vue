@@ -6,7 +6,7 @@
       </template>
       {{ switchText }}
     </a-tooltip>
-    <a-switch v-model="checked" @click="handleSwitch">
+    <a-switch v-model="flag" @click="handleSwitch">
       <a-icon slot="checkedChildren" type="check" />
       <a-icon slot="unCheckedChildren" type="close" />
     </a-switch>
@@ -37,19 +37,15 @@ export default {
   },
   data() {
     return {
-      loading: false,
-      checked: false
+      loading: false
     };
-  },
-  created() {
-    this.checked = this.flag
   },
   methods: {
     handleSwitch() {
-      var checked = this.checked;
+      var checked = this.flag;
       this.$request.switchApi(this.type, checked).then(res => {
         if (res.status !== 200) {
-          this.checked = !checked;
+          this.flag = !checked;
         }else {
           var status = checked ? "已打开" : "已关闭"
           if (res.data.data.handle){
