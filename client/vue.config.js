@@ -19,7 +19,7 @@ module.exports = {
 
     proxy: {
       '/apis': {
-        target: 'http://127.0.0.1:8000',// 要跨域的域名
+        target: 'http://localhost:8081/server/public',// 要跨域的域名
         secure:false,
         changeOrigin: true, // 是否开启跨域
         pathRewrite:{
