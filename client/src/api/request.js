@@ -4,7 +4,7 @@ import {service} from '@/api/index'
 export const switchApi = (type, flag) => {
     return service
         .request({
-            url: '/quickSwitch',
+            url: '/functional/quickSwitch',
             method: 'put',
             data: {
                 data:{
@@ -13,14 +13,32 @@ export const switchApi = (type, flag) => {
                 }
             }
         })
-        .then(res=> res.response)
+        .then(res=> res)
 }
 
 export const switchStatus = () => {
     return service
         .request({
-            url: '/switchStatus',
+            url: '/functional/switchStatus',
             method: 'get',
         })
-        .then(res=> res.response)
+        .then(res=> res)
+}
+
+export const getR1Api = () => {
+    return service
+        .request({
+            url: '/functional/getApiInfo',
+            method: 'get',
+        })
+        .then(res=> res)
+}
+
+export const clearR1Cache = () => {
+    return service
+        .request({
+            url: '/functional/clearCache',
+            method: 'get',
+        })
+        .then(res=> res)
 }
