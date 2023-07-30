@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+   RewriteEngine On
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteRule ^((?s).*)$ index.php?_url=/$1 [QSA,L]
+
+          Header set Access-Control-Allow-Origin "*"
+          Header append Access-Control-Allow-Headers "Content-Type,x-requested-with,pragma,cache-control,expires,Client-Secret,Km,tk"
+          Header append Access-Control-Allow-Methods "GET,PUT,DELETE,POST,HEAD,OPTIONS,PATCH"
+          Header append X-Content-Type-Options "nosniff"
+          Header set Server ""
+          Header append X-Frame-Options Deny
+          Header append Cache-Control "private,no-cache,no-store"
+
+      	Header set X-Xss-Protection "1; mode=block"
+      	Header set Strict-Transport-Security "max-age=31536000"
+      	Header set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src https://* http://*;"
+      	Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+
+</IfModule>
