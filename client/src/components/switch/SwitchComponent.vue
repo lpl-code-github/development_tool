@@ -6,7 +6,7 @@
       </template>
       {{ switchText }}
     </a-tooltip>
-    <a-switch v-model="flag" @click="handleSwitch">
+    <a-switch v-model="checked" @click="handleSwitch">
       <a-icon slot="checkedChildren" type="check" />
       <a-icon slot="unCheckedChildren" type="close" />
     </a-switch>
@@ -50,6 +50,13 @@ export default {
       this.$request.switchApi(this.type, checked).then(res => {
         if (res.status !== 200) {
           this.checked = !checked;
+        }else {
+          var status = checked ? "已打开" : "已关闭"
+          if (res.data.data.handle){
+            this.$message.success(this.switchText+'操作成功：' + status, 3)
+          }else {
+            this.$message.error(this.switchText+'操作失败：' + status, 3)
+          }
         }
       });
     }
