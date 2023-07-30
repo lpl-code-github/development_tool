@@ -5,12 +5,12 @@
         <span style="font-size: medium;font-weight: bolder">RISKID开发者工具</span>
       </div>
       <div style="float: left">
-        <a-button icon="setting" :size="buttonSize" style="margin-right: 20px" :loading="loadingUpdateSystem">
-          更新本系统
+        <a-button icon="setting" :size="buttonSize" style="margin-right: 20px" :loading="loadingUpdateSystem" @click="handleOpenDrawer">
+          R1概览
         </a-button>
 
         <!--快捷开关-->
-        <a-popover title="开关" placement="topLeft" trigger="click" @click="handleQuickSwitch" :visible="popoverIsShow">
+        <a-popover ref="popover" title="开关" placement="topLeft" trigger="click" @click="handleQuickSwitch" :visible="popoverIsShow">
           <template slot="content">
             <SwitchComponent
                 v-for="(item,index) in switchComponentData"
@@ -20,6 +20,9 @@
                 :tooltip-text="item.tooltipText"
                 :flag = "item.checked"
             />
+            <a-button type="primary" style="margin:10px 0" block @click="handleClearCache">
+              R1清除缓存
+            </a-button>
           </template>
           <a-button icon="setting" :size="buttonSize">
             快捷开关
@@ -29,36 +32,44 @@
 
     </a-layout-header>
 
-
+    <Statistics @updateDrawerStatus="getDrawerStatus" :open-flag="openDrawer"></Statistics>
   </div>
 </template>
 
 <script>
 import SwitchComponent from "@/components/switch/SwitchComponent";
+import Statistics from "@/components/preview/Statistics";
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'MyHeader',
-  components: {SwitchComponent},
+  components: {Statistics, SwitchComponent},
   props: {
     msg: String
   },
   data() {
     return {
+      openDrawer: false,
       buttonSize: "small",
-      loadingUpdateSystem: true,
+      loadingUpdateSystem: false,
       popoverIsShow: false,
       switchComponentData: [
         {
-          tooltipText: "此开关打开，后端API将返回Symfony的报错信息，否则返回json的报错信息",
-          switchText: "后台报错信息",
-          type: "error_message",
+          tooltipText: "此开关打开，开发环境下，后端API将返回Symfony的报错信息，否则返回json的报错信息",
+          switchText: "开发报错信息",
+          type: "dev_env_error_message",
+          checked: false
+        },
+        {
+          tooltipText: "此开关打开，测试环境下，后端API将返回Symfony的报错信息，否则返回json的报错信息",
+          switchText: "测试报错信息",
+          type: "test_env_error_message",
           checked: false
         },
         {
           tooltipText: "此开关打开，后端代码的.env文件中将修改环境遍历APP_ENV=test，否则为dev",
           switchText: "切换测试模式",
-          type: "evn",
+          type: "test_env",
           checked: false
         },
         {
@@ -70,6 +81,12 @@ export default {
       ]
     }
   },
+  mounted() {
+    document.addEventListener('click', this.handleOutsideClick);
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleOutsideClick);
+  },
   methods: {
     async handleQuickSwitch() {
       await this.$request.switchStatus().then(res => {
@@ -77,31 +94,44 @@ export default {
           this.popoverIsShow = false
         }else {
           this.popoverIsShow = true
-        }
-
-        var response = {
-          data:[
-            {
-              type: "error_message",
-              checked: false
-            },
-            {
-              type: "evn",
-              checked: true
-            },
-            {
-              type: "back_api",
-              checked: true
+          var data = res.data.data
+          this.switchComponentData.forEach(componentDataItem => {
+            const responseItem = data.find(item => item.type === componentDataItem.type);
+            if (responseItem) {
+              componentDataItem.checked = responseItem.checked;
             }
-          ]
+          });
         }
-        this.switchComponentData.forEach(componentDataItem => {
-          const responseItem = response.data.find(item => item.type === componentDataItem.type);
-          if (responseItem) {
-            componentDataItem.checked = responseItem.checked;
-          }
-        });
       })
+    },
+    handleClearCache(){
+      var message = this.$message
+      var loadingMessage = message.loading('RISKID环境中正在执行php bin/console cache:clear，您可以继续进行其他操作', 0)
+      this.$request.clearR1Cache().then(res=>{
+        if (res.status !== 200) {
+          this.popoverIsShow = false
+        }else {
+          if (res.data.data.command_status === true){
+            setTimeout(loadingMessage, 0);
+            message.success('清除缓存执行成功', 2.5)
+          }else {
+            setTimeout(loadingMessage, 0);
+            message.success('执行失败，请去手动执行命令php bin/console cache:clear', 2.5)
+          }
+        }
+      })
+    },
+    handleOpenDrawer(){
+      this.openDrawer = true
+    },
+    getDrawerStatus(status){
+      this.openDrawer = status
+    },
+    // 监听手动关闭popover
+    handleOutsideClick(event) {
+      if (this.popoverIsShow  && !this.$refs.popover.$el.contains(event.target)) {
+        this.popoverIsShow = false
+      }
     }
   }
 }
