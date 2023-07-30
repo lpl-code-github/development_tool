@@ -72,7 +72,7 @@ export default {
         {
           key: "1",
           icon: "code",
-          text: "日志",
+          text: "首页",
           link: '/index'
         },
         {
