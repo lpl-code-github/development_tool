@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Factory\ExceptionFactory;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 class RiskidService
@@ -44,8 +45,8 @@ class RiskidService
     public function clearCache(): bool
     {
         $process = Process::fromShellCommandline($this->parameterBag->get('cache_clear_command'));
-        // $process->setWorkingDirectory('/var/app/server/');// 测试用
-        $process->setWorkingDirectory('/var/app/r1/');
+         $process->setWorkingDirectory('/var/app/server/');// 测试用
+//        $process->setWorkingDirectory('/var/app/r1/');
         $process->run();
         return $process->isSuccessful();
     }
@@ -94,7 +95,43 @@ class RiskidService
     }
 
     /**
+     * 修改Riskid开启报错信息
+     *
+     * @param string $env
+     * @param bool $flag
+     * @return bool
+     * @throws \Exception
+     */
+    public function editErrorMessage(string $env,bool $flag): bool
+    {
+        $filePath = $this->parameterBag->get("riskid_exception_subscriber_php_path");
+        try {
+            $permission = 0644;
+            chmod($filePath, $permission);
+
+            // 重写文件中的$this->environment这一行
+            $envFileLines = file($filePath, FILE_IGNORE_NEW_LINES);
+            foreach ($envFileLines as &$line) {
+                if (preg_match('/if\s*\(\s*\$this->environment\s*!==\s*[\'"]?dev[\'"]?/', $line) ||
+                    preg_match('/if\s*\(\s*\$this->environment\s*==\s*[\'"]?dev[\'"]?/', $line)) {
+                    if ($env == 'dev'){
+                        $line = $flag ? '        if($this->environment !== \'dev\'){':'        if($this->environment == \'dev\'){';
+                    }elseif ($env == 'test'){
+                        $line = $flag ? '        if($this->environment == \'dev\'){':'        if($this->environment !== \'dev\'){';
+                    }
+                    break;
+                }
+            }
+            file_put_contents($filePath, implode("\n", $envFileLines) . "\n");
+            return true;
+        }catch (\Exception $exception){
+            throw ExceptionFactory::InternalServerException($exception->getMessage());
+        }
+    }
+
+    /**
      * 获取Riskid是否开启报错信息
+     *
      * @param string $env env的类型
      * @return bool
      * @throws \Exception
@@ -112,5 +149,53 @@ class RiskidService
             return !$flag;
         }
         throw ExceptionFactory::InternalServerException("参数 envType错误");
+    }
+
+    /**
+     * 导入或移除Riskid中的TestController.php
+     * @param bool $flag 如果是true则导入，否则移除
+     * @return bool
+     * @throws \Exception
+     */
+    public function importOrRemoveBackApi(bool $flag): bool
+    {
+        try {
+            $target = $this->parameterBag->get('target_test_controller_path');
+            $source = $this->parameterBag->get('source_test_controller_path');
+
+            $filesystem = new Filesystem();
+            if ($flag) {
+                if (!$filesystem->exists($target)) {
+                    $filesystem->copy(
+                        BASE_PATH.$source,
+                        $target
+                    );
+                }
+            }else{
+                if ($filesystem->exists($target)) {
+                    $filesystem->remove($target);
+                }
+            }
+
+            return true;
+        }catch (\Exception $exception){
+            throw ExceptionFactory::InternalServerException($exception->getMessage());
+        }
+    }
+
+    /**
+     * 查看Riskid中是否存在TestController.php
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function getBackApiExists(): bool
+    {
+        try {
+            $filesystem = new Filesystem();
+            return $filesystem->exists($this->parameterBag->get('target_test_controller_path'));
+        }catch (\Exception $exception){
+            throw ExceptionFactory::InternalServerException($exception->getMessage());
+        }
     }
 }

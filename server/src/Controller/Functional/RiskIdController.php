@@ -6,6 +6,7 @@ namespace App\Controller\Functional;
 use App\Factory\ExceptionFactory;
 use App\Service\RiskidService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,7 @@ class RiskIdController extends AbstractController
     /**
      * @Route("/clearCache", name="clear r1 cache", methods={"GET"})
      */
-    public function clearCache(): Response
+    public function clearCache(): JsonResponse
     {
         $resultArray = array();
         $resultArray['data']['command_status'] = $this->riskidService->clearCache();
@@ -35,7 +36,7 @@ class RiskIdController extends AbstractController
     /**
      * @Route("/getApiInfo", name="get api info", methods={"GET"})
      */
-    public function getApiInfo(): Response
+    public function getApiInfo(): JsonResponse
     {
         $resultArray = array();
         $apiInfos = $this->riskidService->getApiInfos();
@@ -97,7 +98,7 @@ class RiskIdController extends AbstractController
      * @Route("/switchStatus", name="get switch status", methods={"GET"})
      * @throws \Exception
      */
-    public function switchStatus(): Response
+    public function switchStatus(): JsonResponse
     {
         $resultArray = array();
         $devEnvErrorMessageResult = array();
@@ -126,7 +127,7 @@ class RiskIdController extends AbstractController
             $testEvnResult['value'] = $riskidAppEnv;
         }
 
-        $backApiResult['checked'] = false;
+        $backApiResult['checked'] = $this->riskidService->getBackApiExists();
 
         $resultArray['data'][] = $backApiResult;
         $resultArray['data'][] = $devEnvErrorMessageResult;
@@ -140,7 +141,7 @@ class RiskIdController extends AbstractController
      * @Route("/quickSwitch", name="quick sitch config", methods={"PUT"})
      * @throws \Exception
      */
-    public function quickSwitch(Request $request): Response
+    public function quickSwitch(Request $request): JsonResponse
     {
         $resultArray = array();
 
@@ -159,13 +160,26 @@ class RiskIdController extends AbstractController
         if (!is_bool($flag)){
             throw ExceptionFactory::WrongFormatException("flag参数只能是bool类型");
         }
-
-        if ($type == "test_env"){
-            if ($flag){
-                $this->riskidService->editAppEvn("test");
-            } else {
-                $this->riskidService->editAppEvn("dev");
-            }
+        switch ($type){
+            case 'test_env' :
+                if ($flag){
+                    $env = "test";
+                } else {
+                    $env = "dev";
+                }
+                $this->riskidService->editAppEvn($env);
+                break;
+            case 'back_api' :
+                $this->riskidService->importOrRemoveBackApi($flag);
+                break;
+            case 'dev_env_error_message' :
+                $this->riskidService->editErrorMessage('dev', $flag);
+                break;
+            case 'test_env_error_message' :
+                $this->riskidService->editErrorMessage('test', $flag);
+                break;
+            default:
+                break;
         }
 
         $resultArray['data']['handle'] =true;
