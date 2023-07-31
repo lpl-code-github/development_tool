@@ -38,7 +38,7 @@ export const clearR1Cache = () => {
     return service
         .request({
             url: '/functional/clearCache',
-            method: 'get',
+            method: 'post',
         })
         .then(res=> res)
 }

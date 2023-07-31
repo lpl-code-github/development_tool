@@ -33,7 +33,7 @@ class GeneratorService
                     'required' => $keys,
                 ];
             }else{
-
+//                $i = 1/0;
                 $arr = $data;
                 if (count($arr) == 0) { // 如果数组为空，则返回类型为数组的对象
                     return [

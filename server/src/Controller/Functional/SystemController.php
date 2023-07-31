@@ -18,7 +18,7 @@ class SystemController extends AbstractController
     }
 
     /**
-     * @Route("/getSystemStatus", name="get system status", methods={"GET"})
+     * @Route("/getSystemStatus", name="获取系统状态", methods={"GET"})
      */
     public function getSystemStats(): JsonResponse
     {

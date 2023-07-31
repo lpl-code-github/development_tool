@@ -31,7 +31,7 @@ class RiskidService
     {
         $process = Process::fromShellCommandline($this->parameterBag->get('debug_router_command'));
         // $process->setWorkingDirectory('/var/app/server/');// 测试用
-        $process->setWorkingDirectory('/var/app/r1/');
+        $process->setWorkingDirectory($this->parameterBag->get('riskid_code_path'));
         $process->run();
         $output = $process->getOutput();
         return json_decode($output, true);
@@ -45,8 +45,8 @@ class RiskidService
     public function clearCache(): bool
     {
         $process = Process::fromShellCommandline($this->parameterBag->get('cache_clear_command'));
-         $process->setWorkingDirectory('/var/app/server/');// 测试用
-//        $process->setWorkingDirectory('/var/app/r1/');
+//         $process->setWorkingDirectory('/var/app/server/');// 测试用
+        $process->setWorkingDirectory($this->parameterBag->get('riskid_code_path'));
         $process->run();
         return $process->isSuccessful();
     }
@@ -115,7 +115,7 @@ class RiskidService
                 if (preg_match('/if\s*\(\s*\$this->environment\s*!==\s*[\'"]?dev[\'"]?/', $line) ||
                     preg_match('/if\s*\(\s*\$this->environment\s*==\s*[\'"]?dev[\'"]?/', $line)) {
                     if ($env == 'dev'){
-                        $line = $flag ? '        if($this->environment !== \'dev\'){':'        if($this->environment == \'dev\'){';
+                        $line = $flag ? '        if($this->environm ent !== \'dev\'){':'        if($this->environment == \'dev\'){';
                     }elseif ($env == 'test'){
                         $line = $flag ? '        if($this->environment == \'dev\'){':'        if($this->environment !== \'dev\'){';
                     }

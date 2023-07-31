@@ -22,7 +22,7 @@ class GeneratorController extends AbstractController
     }
 
     /**
-     * @Route("/generatePostmanTest", name="generate postman test", methods={"POST"})
+     * @Route("/generatePostmanTest", name="生成POSTMAN测试", methods={"POST"})
      */
     public function generatePostmanTest(Request $request): Response
     {

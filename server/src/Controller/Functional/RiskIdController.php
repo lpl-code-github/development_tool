@@ -24,17 +24,17 @@ class RiskIdController extends AbstractController
     }
 
     /**
-     * @Route("/clearCache", name="clear r1 cache", methods={"GET"})
+     * @Route("/clearCache", name="清除R1缓存", methods={"POST"})
      */
     public function clearCache(): JsonResponse
     {
         $resultArray = array();
-        $resultArray['data']['command_status'] = $this->riskidService->clearCache();
+        $resultArray['data']['handle'] = $this->riskidService->clearCache();
         return new JsonResponse($resultArray);
     }
 
     /**
-     * @Route("/getApiInfo", name="get api info", methods={"GET"})
+     * @Route("/getApiInfo", name="获取RISKID所有API信息", methods={"GET"})
      */
     public function getApiInfo(): JsonResponse
     {
@@ -95,7 +95,7 @@ class RiskIdController extends AbstractController
 
 
     /**
-     * @Route("/switchStatus", name="get switch status", methods={"GET"})
+     * @Route("/switchStatus", name="获取快捷开关操作", methods={"GET"})
      * @throws \Exception
      */
     public function switchStatus(): JsonResponse
@@ -138,7 +138,7 @@ class RiskIdController extends AbstractController
     }
 
     /**
-     * @Route("/quickSwitch", name="quick sitch config", methods={"PUT"})
+     * @Route("/quickSwitch", name="快捷开关操作", methods={"PUT"})
      * @throws \Exception
      */
     public function quickSwitch(Request $request): JsonResponse
@@ -181,7 +181,7 @@ class RiskIdController extends AbstractController
             default:
                 break;
         }
-
+        // 如果没有抛出异常就是true
         $resultArray['data']['handle'] =true;
         return new JsonResponse($resultArray);
     }

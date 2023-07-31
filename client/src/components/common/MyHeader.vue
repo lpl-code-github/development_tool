@@ -114,7 +114,7 @@ export default {
         if (res.status !== 200) {
           this.popoverIsShow = false
         }else {
-          if (res.data.data.command_status === true){
+          if (res.data.data.handle === true){
             setTimeout(loadingMessage, 0);
             message.success('清除缓存执行成功', 2.5)
           }else {
