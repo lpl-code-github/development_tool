@@ -34,6 +34,9 @@ const routes = [
     {
         path: '/slate-generator', component: () => import('@/views/SlateGenerator')
     },
+    {
+        path: '/postman-test-generator', component: () => import('@/views/PostmanTestGenerator')
+    },
     //
     // {
     //     path: '/home', component: () => import('@/views/Home')

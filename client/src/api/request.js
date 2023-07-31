@@ -42,3 +42,14 @@ export const clearR1Cache = () => {
         })
         .then(res=> res)
 }
+
+
+export const generatePostmanTest = (data) => {
+    return service
+        .request({
+            url: '/functional/generatePostmanTest',
+            method: 'post',
+            data: data
+        })
+        .then(res=> res)
+}
