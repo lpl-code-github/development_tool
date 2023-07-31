@@ -20,7 +20,7 @@ class SystemController extends AbstractController
     /**
      * @Route("/getSystemStatus", name="get system status", methods={"GET"})
      */
-    public function getSystemStats()
+    public function getSystemStats(): JsonResponse
     {
         return new JsonResponse([
             'cpu_usage' => $this->systemService->getSystemUsage("cpu"),
