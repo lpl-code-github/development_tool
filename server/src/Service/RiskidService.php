@@ -75,10 +75,10 @@ class RiskidService
         try {
             $envFile = $this->parameterBag->get("riskid_env_path");
 
-            // 修改环境变量
-            $dotenv = new Dotenv();
-            $dotenv->load($envFile);
-            $dotenv->populate(['APP_ENV' => $env], true);
+            // 修改环境变量： 不能这样修改环境变量，因为本项目也是symfony，这样会把r1的evn设置成这里的环境变量
+//            $dotenv = new Dotenv();
+//            $dotenv->load($envFile);
+//            $dotenv->populate(['APP_ENV' => $env], true);
 
             // 重写文件中的APP_ENV
             $envFileLines = file($envFile, FILE_IGNORE_NEW_LINES);
