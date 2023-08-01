@@ -32,14 +32,7 @@ class OperationLogFactory
     {
         // 响应状态码
         $statusCode = $response->getStatusCode();
-        // 响应体
-        $responseData = json_decode($response->getContent(), true);
-        // @Route注解写的name
-        $actionName = $request->attributes->get('_route');
-        // 请求体
-        $requestBody = json_decode($request->getContent(), true);
-        // 请求方法
-        $requestMethod = $request->getMethod();
+
         // 接口名
         $sep_array = explode('/index.php', $_SERVER['PHP_SELF']);
         if ($sep_array[0] != '') {
@@ -48,6 +41,18 @@ class OperationLogFactory
         } else {
             $uri = $request->getRequestUri();
         }
+        // 响应体
+        $responseData = json_decode($response->getContent(), true);
+
+        // $actionName默认为@Route注解写的name
+        // 有几个接口需要重写$actionName
+        $rewriteActionName = $this->rewriteActionName($uri, $request);
+        $actionName = ($rewriteActionName != null) ? $rewriteActionName : $request->attributes->get('_route');
+
+        // 请求体
+        $requestBody = json_decode($request->getContent(), true);
+        // 请求方法
+        $requestMethod = $request->getMethod();
 
         // 接口操作状态
         if ($statusCode == 200) {
@@ -67,7 +72,7 @@ class OperationLogFactory
         $operationLog->setName($actionName);
         $operationLog->setMethod($requestMethod);
         $operationLog->setStatusCode($statusCode);
-        if ($errorMessage){
+        if ($errorMessage) {
             $operationLog->setMessage($errorMessage);
         }
         $operationLog->setRequestBody($requestBody);
@@ -75,5 +80,46 @@ class OperationLogFactory
         $operationLog->setType($operationType);
         $operationLog->setStatus($status ? 'successful' : 'failure');
         return $operationLog;
+    }
+
+    /**
+     * 自定义一些接口的ActionName
+     * @param $uri
+     * @param $request
+     * @return string|null
+     */
+    private function rewriteActionName($uri, $request): ?string
+    {
+        $requestData = json_decode($request->getContent(), true);
+        if ($uri == "/functional/quickSwitch") {
+            return $this->handleQuickSwitchRewriteActionName($requestData);
+        }
+        return null;
+    }
+
+    /**
+     * 重写/functional/quickSwitch接口日志的ActionName
+     * @param $requestData
+     * @return string|null
+     */
+    function handleQuickSwitchRewriteActionName($requestData): ?string
+    {
+        $type = $requestData['data']['type'] ?? null;
+        $flag = $requestData['data']['flag'] ?? null;
+        if ($type) {
+            switch ($type) {
+                case 'test_env' :
+                    return $flag ? "打开test环境" : "关闭test环境";
+                case 'back_api' :
+                    return $flag ? "导入备份接口" : "取消导入备份接口";
+                case 'dev_env_error_message' :
+                    return $flag ? "打开开发环境报错信息" : "关闭开发环境报错信息";
+                case 'test_env_error_message' :
+                    return $flag ? "打开测试环境报错信息" : "关闭关闭环境报错信息";
+                default:
+                    return null;
+            }
+        }
+        return null;
     }
 }
