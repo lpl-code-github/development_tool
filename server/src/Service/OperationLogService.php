@@ -24,7 +24,6 @@ class OperationLogService
             "route" => [
                 "/functional/generatePostmanTest",
             ]
-
         ]
     ];
 
@@ -90,6 +89,31 @@ class OperationLogService
         $this->entityManager->flush();
     }
 
+    /**
+     * 查询全部
+     *
+     * @return array
+     */
+    public function getOperationLogs(): array
+    {
+        $resultArray = array();
+        $operationLogs = $this->entityManager->getRepository(OperationLog::class)->findAll();
+        foreach ($operationLogs as $operationLog){
+            $operationLogDto = new OperationLogDto($operationLog);
+            $toArray = $operationLogDto->toArray(['type', 'name', 'status', 'status_code', 'message', 'created_at']);
+            $resultArray[] = $toArray;
+        }
+        return $resultArray;
+    }
+
+    /**
+     * 通过CreatedAt查询日志
+     *
+     * @param $createdAt
+     * @param $type
+     * @param $name
+     * @return array
+     */
     public function getOperationLogByCreatedAt($createdAt, $type, $name): array
     {
         $resultArray = array();
@@ -102,7 +126,7 @@ class OperationLogService
             $filed['name'] = $name;
         }
 
-        $operationLogs = $this->entityManager->getRepository(OperationLog::class)->getObjArrayByFiled($filed);
+        $operationLogs = $this->entityManager->getRepository(OperationLog::class)->findObjArrayByFiled($filed);
         foreach ($operationLogs as $operationLog){
             $operationLogDto = new OperationLogDto($operationLog);
             $toArray = $operationLogDto->toArray(['type', 'name', 'status', 'status_code', 'message', 'created_at']);
@@ -111,10 +135,26 @@ class OperationLogService
         return $resultArray;
     }
 
-    public function getOperationLogs(): array
+    /**
+     * 通过startDate和EndDate查询日期范围日志
+     *
+     * @param string $start
+     * @param string $target
+     * @return array
+     */
+    public function getOperationLogByStartAndTarget(string $start, string $target): array
     {
         $resultArray = array();
-        $operationLogs = $this->entityManager->getRepository(OperationLog::class)->findAll();
+
+        $filed = array();
+        if ($start){
+            $filed['start'] = $start;
+        }
+        if ($target){
+            $filed['target'] = $target;
+        }
+
+        $operationLogs = $this->entityManager->getRepository(OperationLog::class)->findObjArrayByFiled($filed);
         foreach ($operationLogs as $operationLog){
             $operationLogDto = new OperationLogDto($operationLog);
             $toArray = $operationLogDto->toArray(['type', 'name', 'status', 'status_code', 'message', 'created_at']);

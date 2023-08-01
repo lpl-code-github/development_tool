@@ -47,7 +47,12 @@ class OperationLogController extends AbstractController
             return new JsonResponse($resultArray);
         }
 
-        $resultArray['data'] = $this->operationLogService->getOperationLogs($createdAt,$type,$name);
+        if ($start && $target){
+            $resultArray['data'] = $this->operationLogService->getOperationLogByStartAndTarget($start,$target);
+            return new JsonResponse($resultArray);
+        }
+
+        $resultArray['data'] = $this->operationLogService->getOperationLogs();
         return new JsonResponse($resultArray);
 
     }
