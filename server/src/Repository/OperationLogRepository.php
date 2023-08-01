@@ -21,7 +21,7 @@ class OperationLogRepository extends ServiceEntityRepository
     }
 
 
-    public function getObjArrayByFiled(array $filed){
+    public function findObjArrayByFiled(array $filed){
         $qb = $this->getEntityManager()->createQueryBuilder();
         $query = $qb->select('ol')
             ->from(OperationLog::class, 'ol');
@@ -31,6 +31,14 @@ class OperationLogRepository extends ServiceEntityRepository
                 case "created_at":
                     $query->andWhere($qb->expr()->eq('DATE(ol.created_at)', ':created_at'))
                         ->setParameter('created_at', $value);
+                    break;
+                case "start":
+                    $query->andWhere($qb->expr()->gte('DATE(ol.created_at)', ':start'))
+                        ->setParameter('start', $value);
+                    break;
+                case "target":
+                    $query->andWhere($qb->expr()->lte('DATE(ol.created_at)', ':target'))
+                        ->setParameter('target', $value);
                     break;
                 case "type":
                     $query->andWhere('ol.type = :type')
