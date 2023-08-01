@@ -8,7 +8,8 @@ import hl from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css'
 // 代码复制组件
 import clipboard from 'clipboard'
-
+// 创建事件总线实例
+const bus = new Vue();
 // 引入公共css
 import './assets/css/common.css'
 // 引入封装好的axios请求
@@ -30,6 +31,8 @@ echarts.use([
 Vue.prototype.$request = request
 Vue.prototype.$echarts = echarts
 Vue.prototype.clipboard = clipboard
+// 将事件总线实例挂载到Vue原型上
+Vue.prototype.$bus = bus;
 
 Vue.config.productionTip = false
 

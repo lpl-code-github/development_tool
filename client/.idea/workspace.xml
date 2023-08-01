@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0222d096-929b-40cb-a84f-6bd3d4e76e5b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../server/.env" beforeDir="false" afterPath="$PROJECT_DIR$/../server/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/config/routes/annotations.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/config/routes/annotations.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Functional/RiskIdController.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Controller/Functional/RiskIdController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/src/Service/RiskidService.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Service/RiskidService.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,6 +50,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -105,7 +103,7 @@
       <workItem from="1690545250194" duration="1452000" />
       <workItem from="1690546707483" duration="11018000" />
       <workItem from="1690567064128" duration="8075000" />
-      <workItem from="1690575964531" duration="58866000" />
+      <workItem from="1690575964531" duration="67938000" />
     </task>
     <servers />
   </component>

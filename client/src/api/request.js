@@ -53,3 +53,12 @@ export const generatePostmanTest = (data) => {
         })
         .then(res=> res)
 }
+
+export const getLog = (param) => {
+    return service
+        .request({
+            url: '/resource/operation_log'+param,
+            method: 'get',
+        })
+        .then(res=> res)
+}

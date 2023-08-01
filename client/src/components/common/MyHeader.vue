@@ -122,6 +122,7 @@ export default {
             message.success('执行失败，请去手动执行命令php bin/console cache:clear', 2.5)
           }
         }
+        this.$bus.$emit('requestCompleted');
       })
     },
     handleOpenDrawer(){
