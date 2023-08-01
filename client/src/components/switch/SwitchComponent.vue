@@ -54,6 +54,7 @@ export default {
             this.$message.error(this.switchText+'操作失败：' + status, 3)
           }
         }
+        this.$bus.$emit('requestCompleted');
       });
     }
   }
