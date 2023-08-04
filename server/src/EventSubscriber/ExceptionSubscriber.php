@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
-    private $environment;
+    private string $environment;
 
     public function __construct(
         KernelInterface $kernel)
