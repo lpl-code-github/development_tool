@@ -49,10 +49,10 @@ service.interceptors.response.use(
                 message: '未找到',
             });
         }else {
-            console.log(error)
+
             notification.error({
                 message: '错误的请求',
-                description: error.response.data
+                description: error.response.data.message
             });
         }
 
