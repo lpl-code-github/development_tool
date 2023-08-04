@@ -23,6 +23,7 @@ class OperationLogService
             "name" => "生成器",
             "route" => [
                 "/functional/generatePostmanTest",
+                "/functional/generateCode"
             ]
         ]
     ];
