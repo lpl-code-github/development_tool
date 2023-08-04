@@ -93,6 +93,15 @@ class RiskIdController extends AbstractController
         return new JsonResponse($resultArray);
     }
 
+    /**
+     * @Route("/getEntityLists", name="获取RISKID所有Entity列表", methods={"GET"})
+     */
+    public function getEntityLists(): JsonResponse
+    {
+        $entityLists = $this->riskidService->handleGetEntityLists();
+        return new JsonResponse($entityLists);
+    }
+
 
     /**
      * @Route("/switchStatus", name="获取快捷开关操作", methods={"GET"})

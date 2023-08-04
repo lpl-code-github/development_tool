@@ -6,6 +6,7 @@ use App\Factory\ExceptionFactory;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
 class RiskidService
@@ -197,5 +198,27 @@ class RiskidService
         }catch (\Exception $exception){
             throw ExceptionFactory::InternalServerException($exception->getMessage());
         }
+    }
+
+    /**
+     * 获取Riskid的所有entity文件
+     * @return array
+     */
+    public function handleGetEntityLists(): array
+    {
+        $finder = new Finder();
+
+        $files = $finder->files()
+            ->in($this->parameterBag->get('risk_id_entity_path'))
+            ->name('*.php');
+
+        $result = [];
+
+        foreach ($files as $file) {
+            $result[] = $file->getBasename();
+        }
+
+        return $result;
+
     }
 }

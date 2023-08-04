@@ -2,130 +2,193 @@
 
 namespace App\Service;
 
+use App\Factory\ExceptionFactory;
+use App\Service\Generator\GenerateControllerCodeService;
+use App\Service\Generator\GenerateDtoCodeService;
+use App\Service\Generator\GenerateFactoryCodeService;
+use App\Service\Generator\GeneratePostmanTestService;
+use App\Service\Generator\GenerateServiceCodeService;
+use ReflectionException;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Filesystem\Filesystem;
+
 class GeneratorService
 {
-    function generatorPostmanTest($data): string
+    private GeneratePostmanTestService $generatePostmanTestService;
+    private GenerateDtoCodeService $generateDtoCodeService;
+    private GenerateFactoryCodeService $generateFactoryCodeService;
+    private GenerateControllerCodeService $generateControllerCodeService;
+    private GenerateServiceCodeService $generateServiceCodeService;
+    private ParameterBagInterface $parameterBag;
+
+    public function __construct(
+        GeneratePostmanTestService    $generatePostmanTestService,
+        GenerateDtoCodeService        $generateDtoCodeService,
+        GenerateFactoryCodeService    $generateFactoryCodeService,
+        GenerateControllerCodeService $generateControllerCodeService,
+        GenerateServiceCodeService    $generateServiceCodeService,
+        ParameterBagInterface         $parameterBag
+    )
     {
-        // 调用 generateSchema() 函数，生成 JSON Schema
-
-        $schema =  $this->generateSchema($data, null);
-        // 将 JSON Schema 对象格式化成 JSON 数据，并进行缩进
-        $schemaFormatted = json_encode($schema, JSON_PRETTY_PRINT);
-        return $this->getJsonSchemaTest($schemaFormatted);
-    }
-
-    function generateSchema($data, $parentFiled): array
-    {
-
-        if (is_array($data)){
-            if ($this->isArrayAssociative($data)){
-                $properties = array();
-                $keys = array();
-                foreach ($data as $k => $v) {
-                    $keys[] = $k;
-                    $properties[$k] = $this->generateSchema($v, $data);
-                }
-
-                // 返回包含属性集合和所属类型、必需字段的数组
-                return [
-                    'properties' => $properties,
-                    'type' => 'object',
-                    'required' => $keys,
-                ];
-            }else{
-//                $i = 1/0;
-                $arr = $data;
-                if (count($arr) == 0) { // 如果数组为空，则返回类型为数组的对象
-                    return [
-                        "type" => "array"
-                    ];
-                }
-
-                if (is_array($parentFiled)&& !$this->isArrayAssociative($parentFiled)) { // 判断父级对象的类型是否为数组
-                    return []; // 如果父级对象是数组类型，则返回一个空的 JSON 对象
-                } else { // 否则返回包含数组项类型和所属数组类型的对象
-                    return [
-                        "items" => $this->generateSchema($arr[0], $data),
-                        "type" => "array"
-                    ];
-                }
-            }
-        }elseif (is_float($data)){
-            return ['type' => 'integer'];
-        }elseif (is_bool($data)){
-            return ['type' => 'boolean'];
-        }elseif (is_integer($data) || is_int($data)){
-            return ['type' => 'integer'];
-        } elseif (is_string($data)){
-            $s = strval($data);
-            if ($this->isStringInt($s)) {
-                return ['type' => ['string', 'integer']];
-            } else {
-                return ['type' => 'string'];
-            }
-        }else{
-            return ['type' => 'null'];
-        }
+        $this->generatePostmanTestService = $generatePostmanTestService;
+        $this->generateDtoCodeService = $generateDtoCodeService;
+        $this->generateFactoryCodeService = $generateFactoryCodeService;
+        $this->generateControllerCodeService = $generateControllerCodeService;
+        $this->generateServiceCodeService = $generateServiceCodeService;
+        $this->parameterBag = $parameterBag;
     }
 
     /**
-     * 判断数组是关联数组还是普通数组
-     * @param $array
-     * @return bool 返回true代表是关联数组，否则是普通数组
+     * 生成postman test
+     * @param array $data
+     * @return string
      */
-    function isArrayAssociative($array): bool
+    public function handleGeneratorPostmanTest(array $data): string
     {
-        if (!is_array($array)) {
-            return false;
-        }
-
-        $keys = array_keys($array);
-
-        if (array_keys($keys) !== $keys) {
-            return true;
-        }
-
-        for ($i = 0; $i < count($keys); $i++) {
-            if ($i !== $keys[$i]) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->generatePostmanTestService->generatorPostmanTest($data);
     }
 
     /**
-     * 判断字符串是否可以成功解析为整型
-     *
-     * @param $s
-     * @return bool
+     * 生成dto代码
+     * @throws ReflectionException
+     * @throws \Exception
      */
-    private function isStringInt($s): bool
+    public function handleGeneratorDtoCode($data): string
     {
-        return is_numeric($s) && strpos($s, '.') === false;
+        $filesystem = new Filesystem();
+        $destFilePath = $this->copyRiskIdEntity($data, $filesystem);
+
+        try {
+            $dtoCode = $this->generateDtoCodeService->generateDtoCode(
+                'App\TempEntity\\' . $this->removePhpExtension($data)
+            );
+            $filesystem->remove($destFilePath); // 操作完成后删除复制来的文件
+        } catch (\Exception $exception) {
+            $filesystem->remove($destFilePath);
+            throw $exception;
+        }
+
+        return $dtoCode;
     }
 
-    /*
-     * 返回JsonSchemaTest测试模板
+    /**
+     * 生成Factory代码
+     * @param $data
+     * @return string
+     * @throws ReflectionException
+     * @throws \Exception
      */
-    private function getJsonSchemaTest($schemaJson): string
+    public function handleGeneratorFactoryCode($data): string
     {
-        // 写入 JavaScript 代码模板和 JSON Schema
-        $jsTemplate = '// Get the Response
-let response = pm.response.json();
+        $filesystem = new Filesystem();
+        $destFilePath = $this->copyRiskIdEntity($data, $filesystem);
 
-pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
-});
-        
-const schema = %s;
+        try {
+            $factoryCode = $this->generateFactoryCodeService->generateFactoryCode(
+                'App\TempEntity\\' . $this->removePhpExtension($data)
+            );
+            $filesystem->remove($destFilePath); // 操作完成后删除复制来的文件
+        } catch (\Exception $exception) {
+            $filesystem->remove($destFilePath);
+            throw $exception;
+        }
 
-pm.test("Schema is valid", function() {
-   pm.expect(tv4.validate(response, schema)).to.be.true;
-});';
-
-        // 把json格式的schema写入js模版
-        return sprintf($jsTemplate, $schemaJson);
+        return $factoryCode;
     }
 
+    /**
+     * 生成Controller代码
+     * @param $data
+     * @return string
+     * @throws ReflectionException
+     * @throws \Exception
+     */
+    public function handleGeneratorControllerCode($data): string
+    {
+        $filesystem = new Filesystem();
+        $destFilePath = $this->copyRiskIdEntity($data, $filesystem);
+
+        try {
+            $controllerCode = $this->generateControllerCodeService->generateControllerCode(
+                'App\TempEntity\\' . $this->removePhpExtension($data)
+            );
+            $filesystem->remove($destFilePath);  // 操作完成后删除复制来的文件
+        } catch (\Exception $exception) {
+            $filesystem->remove($destFilePath);
+            throw $exception;
+        }
+
+        return $controllerCode;
+    }
+
+    /**
+     * 生成Service代码
+     * @param $data
+     * @return string
+     * @throws ReflectionException
+     * @throws \Exception
+     */
+    public function handleGeneratorServiceCode($data): string
+    {
+        $filesystem = new Filesystem();
+        $destFilePath = $this->copyRiskIdEntity($data, $filesystem);
+
+        try {
+            $serviceCode = $this->generateServiceCodeService->generateServiceCode(
+                'App\TempEntity\\' . $this->removePhpExtension($data)
+            );
+            $filesystem->remove($destFilePath);  // 操作完成后删除复制来的文件
+        } catch (\Exception $exception) {
+            $filesystem->remove($destFilePath);
+            throw $exception;
+        }
+
+        return $serviceCode;
+    }
+
+    /**
+     * 删除.php后缀
+     * @param $string
+     * @return false|mixed|string
+     */
+    function removePhpExtension($string)
+    {
+        $extension = pathinfo($string, PATHINFO_EXTENSION);
+        if ($extension === 'php') {
+            return substr($string, 0, -4);
+        }
+        return $string;
+    }
+
+    /**
+     * 拷贝Riskid的Entity到本项目的TempEntity
+     * @param $fileName
+     * @param Filesystem $filesystem
+     * @return string
+     * @throws \Exception
+     */
+    private function copyRiskIdEntity($fileName, Filesystem $filesystem): string
+    {
+        // 源文件路径
+        $srcFilePath = $this->parameterBag->get('risk_id_entity_path') . $fileName;
+        // 目标文件路径
+        $destFilePath = BASE_PATH . '/src/TempEntity/' . $fileName;
+
+
+        if (!$filesystem->exists($srcFilePath)) {
+            throw ExceptionFactory::NotFoundException('实体类文件未找到： ' . $srcFilePath);
+        }
+
+        // 复制文件
+        $filesystem->copy($srcFilePath, $destFilePath, true);
+
+        // 修改目标文件的命名空间
+        $content = file_get_contents($destFilePath);
+        $content = str_replace('namespace App\Entity;', 'namespace App\TempEntity;', $content);
+        file_put_contents($destFilePath, $content);
+
+        usleep(500000);// 防止文件复制太慢 休眠0.5秒
+
+        return $destFilePath;
+    }
 }

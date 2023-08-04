@@ -13,6 +13,7 @@ parameters:
   riskid_exception_subscriber_php_path: '/var/app/r1/src/EventSubscriber/ExceptionSubscriber.php'
   source_test_controller_path: '/resource/TestController.php'
   target_test_controller_path: '/var/app/r1/src/Controller/TestController.php'
+  risk_id_entity_path: '/var/app/r1/src/Entity/'
 
 
 
