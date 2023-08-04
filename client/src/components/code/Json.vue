@@ -19,14 +19,15 @@ export default {
   data() {
     return {
       hasJsonFlag: true, // json是否验证通过
-      jsonContent: {}
+      jsonText: {}
     }
   },
 
   components: {
     vueJsonEditor
   },
-
+  created() {
+  },
   methods: {
     onJsonChange(value) {
       // 实时保存
