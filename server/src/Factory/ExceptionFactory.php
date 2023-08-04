@@ -14,22 +14,22 @@ class ExceptionFactory
     const ActionNotPerformedExceptionCode = 700;
 
     static public function WrongFormatException($msg, $code = 400) {
-        $ex = (trim($msg) === "") ? new \Exception($code.": WrongFormatException", $code) : new \Exception($code.": WrongFormatException: ".$msg, $code);
+        $ex = (trim($msg) === "") ? new \Exception("WrongFormatException", $code) : new \Exception("WrongFormatException: ".$msg, $code);
         return $ex;
     }
 
     static public function MissingInputException($msg, $code = 400) {
-        $ex = (trim($msg) === "") ? new \Exception($code.": MissingInputException", $code) : new \Exception($code.": MissingInputException: ".$msg, $code);
+        $ex = (trim($msg) === "") ? new \Exception("MissingInputException", $code) : new \Exception("MissingInputException: ".$msg, $code);
         return $ex;
     }
 
     static public function NotFoundException($msg, $code = 404) {
-        $ex = (trim($msg) === "") ? new \Exception($code.": NotFoundException", $code) : new \Exception($code.": NotFoundException: ".$msg, $code);
+        $ex = (trim($msg) === "") ? new \Exception("NotFoundException", $code) : new \Exception("NotFoundException: ".$msg, $code);
         return $ex;
     }
 
     static public function DuplicateFoundException($msg, $code = 400) {
-        $ex = (trim($msg) === "") ? new \Exception($code.": DuplicateFoundException", $code) : new \Exception($code.": DuplicateFoundException: ".$msg, $code);
+        $ex = (trim($msg) === "") ? new \Exception("DuplicateFoundException", $code) : new \Exception("DuplicateFoundException: ".$msg, $code);
         return $ex;
     }
 
@@ -47,7 +47,7 @@ class ExceptionFactory
     }
 
     static public function ConflictException($msg, $code = 429) {
-        $ex = (trim($msg) === "") ? new \Exception($code.": ConflictException", $code) : new \Exception($code.": ConflictException: ".$msg, $code);
+        $ex = (trim($msg) === "") ? new \Exception("ConflictException", $code) : new \Exception("ConflictException: ".$msg, $code);
         return $ex;
     }
 
@@ -64,7 +64,7 @@ class ExceptionFactory
     }
 
     static public function ArgumentOutOfRangeException($msg, $code = 501) {
-        $ex = (trim($msg) === "") ? new \Exception($code.": ArgumentOutOfRangeException", $code) : new \Exception($code.": ArgumentOutOfRangeException: ".$msg, $code);
+        $ex = (trim($msg) === "") ? new \Exception("ArgumentOutOfRangeException", $code) : new \Exception("ArgumentOutOfRangeException: ".$msg, $code);
         return $ex;
     }
 
