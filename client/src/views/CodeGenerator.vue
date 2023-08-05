@@ -2,7 +2,7 @@
   <div>
     <a-select
         show-search
-        placeholder="选择实体类"
+        placeholder="选择Entity"
         option-filter-prop="children"
         style="width: 200px;margin: 20px 20px 20px 0"
         :filter-option="filterOption"
@@ -49,6 +49,7 @@
 <script>
 import Code from "@/components/code/Code";
 import clipboard from "clipboard";
+import {getFileLists} from "@/api/request";
 
 export default {
   name: "CodeGenerator",
@@ -83,7 +84,8 @@ export default {
       }
     },
     getEntityLists(){
-      this.$request.getEntityLists().then(res=>{
+      var params = "?type=entity"
+      this.$request.getFileLists(params).then(res=>{
         if (res.status === 200){
           this.entityLists = res.data
         }

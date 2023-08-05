@@ -7,6 +7,7 @@
 </template>
 
 <script>
+
 export default {
   props:{
     codeText: {
@@ -38,6 +39,7 @@ export default {
 </script>
 
 <style scoped>
+@import 'highlight.js/styles/atom-one-dark.css';
 .my-code{
   margin-top: -20px!important;
   overflow-y: visible;
