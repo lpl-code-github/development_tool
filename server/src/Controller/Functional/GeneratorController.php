@@ -28,15 +28,15 @@ class GeneratorController extends BaseController
         $params = json_decode($request->getContent(),true);
 
         // 测试用
-        $this->validateNecessaryParameters($params,[
-            'data'=>self::OBJECT_TYPE,
-            'name'=>self::STRING_TYPE,
-            'age'=>self::INT_TYPE,
-            'balance'=>self::FLOAT_TYPE,
-            'tags'=>self::ARRAY_TYPE,
-            'null'=>self::NULL_TYPE,
-            'flag'=>self::BOOL_TYPE,
-        ]);
+//        $this->validateNecessaryParameters($params,[
+//            'data'=>self::OBJECT_TYPE,
+//            'name'=>self::STRING_TYPE,
+//            'age'=>self::INT_TYPE,
+//            'balance'=>self::FLOAT_TYPE,
+//            'tags'=>self::ARRAY_TYPE,
+//            'null'=>self::NULL_TYPE,
+//            'flag'=>self::BOOL_TYPE,
+//        ]);
         $result = $this->generatorService->handleGeneratorPostmanTest($params);
 
         $response = new Response($result);
