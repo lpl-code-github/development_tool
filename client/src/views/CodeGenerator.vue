@@ -77,6 +77,8 @@ export default {
           if (res.status === 200){
             this.codeText = res.data
             this.loading = false
+          }else {
+            this.loading =false
           }
         })
       }else {
@@ -127,7 +129,6 @@ export default {
   },
 }
 </script>
-
 <style scoped>
 /deep/ .ant-select-selection--single{
   height: 35px;

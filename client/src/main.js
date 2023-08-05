@@ -4,9 +4,7 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import router from './router/index'
 // 代码高亮
-
 import hl from 'highlight.js';
-
 // 代码复制组件
 import clipboard from 'clipboard'
 // 创建事件总线实例
@@ -50,7 +48,7 @@ Vue.use(mavonEditor)
 //     })
 // })
 
-Vue.directive('highlight', {
+Vue.directive('myHighlight', {
     deep: true,
     bind: function(el, binding) {
         // on first bind, highlight all targets
