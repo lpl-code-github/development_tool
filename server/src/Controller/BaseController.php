@@ -31,6 +31,16 @@ class BaseController extends AbstractController
     /**
      * @throws \Exception
      */
+    protected function validateAllowValue(string $str, array $validValues, string $errorMessage = "")
+    {
+        if (!in_array($str, $validValues)) {
+            throw ExceptionFactory::WrongFormatException($errorMessage == "" ? "Illegal parameter" : $errorMessage);
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
     private function validateParameterType($key, $value, $type)
     {
         switch ($type) {
@@ -40,7 +50,7 @@ class BaseController extends AbstractController
                 }
                 break;
             case 'int':
-                if (!is_integer($value) && !is_integer(filter_var($value, FILTER_VALIDATE_INT)))  {
+                if (!is_integer($value) && !is_integer(filter_var($value, FILTER_VALIDATE_INT))) {
                     throw ExceptionFactory::WrongFormatException("Parameter " . $key . " should be of int type");
                 }
                 break;
@@ -79,7 +89,7 @@ class BaseController extends AbstractController
      * @param $array
      * @return bool 返回true代表是关联数组，否则是普通数组
      */
-    function isArrayAssociative($array): bool
+    private function isArrayAssociative($array): bool
     {
         if (!is_array($array)) {
             return false;
