@@ -63,6 +63,17 @@ EOF;
     {
         $paramsArray = array();
         foreach ($properties as $property) {
+            if ($property->getName() == "id"
+                || $property->getName() == "created_at"
+                || $property->getName() == "createdAt"
+                || $property->getName() == "updated_at"
+                || $property->getName() == "updatedAt"
+                || $property->getName() == "active"
+                || $property->getName() == "is_active"
+                || $property->getName() == "isActive"
+            ){
+                continue;
+            }
             $paramsArray[] = "$".GenerateUtil::lowerFirst($property->getName());
         }
         $paramsString = implode(', ', $paramsArray);
@@ -107,7 +118,12 @@ EOF;
 
             $upperFirstPropertyName = GenerateUtil::upperFirst($propertyName);
             $lowerFirstPropertyName = GenerateUtil::lowerFirst($property->getName());
-            if ($propertyName == "id"){
+            if ($propertyName == "id"
+                ||$propertyName == "created_at"
+                ||$propertyName == "createdAt"
+                ||$propertyName == "updated_at"
+                ||$propertyName == "updatedAt"
+            ){
                 continue;
             }elseif ($propertyName == "active"){
                 $setCode = "        $".$lowerFirstClassName."->set".$upperFirstPropertyName."(1);\n";
