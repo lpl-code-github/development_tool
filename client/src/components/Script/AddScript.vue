@@ -15,7 +15,7 @@
               v-decorator="['name', { rules: [{ required: true, message: 'Please input your name!' }] }]"
           />
         </a-form-item>
-        <a-form-model-item label="注释" prop="desc">
+        <a-form-model-item label="描述" prop="desc">
           <a-input  v-model="form.desc" type="textarea" />
         </a-form-model-item>
 
