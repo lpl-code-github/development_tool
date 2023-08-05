@@ -14,6 +14,8 @@ parameters:
   source_test_controller_path: '/resource/TestController.php'
   target_test_controller_path: '/var/app/r1/src/Controller/TestController.php'
   risk_id_entity_path: '/var/app/r1/src/Entity/'
+  risk_id_controller_path: '/var/app/r1/src/Controller/'
+  default_slate_doc_path: '/resource/doc/default_slate_doc.md'
 
 
 

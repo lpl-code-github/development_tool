@@ -94,11 +94,17 @@ class RiskIdController extends AbstractController
     }
 
     /**
-     * @Route("/getEntityLists", name="获取RISKID所有Entity列表", methods={"GET"})
+     * @Route("/getFileLists", name="获取RISKID所有Entity列表", methods={"GET"})
+     * @throws \Exception
      */
-    public function getEntityLists(): JsonResponse
+    public function getFileLists(Request $request): JsonResponse
     {
-        $entityLists = $this->riskidService->handleGetEntityLists();
+        $type = $request->query->get('type') ?? null;
+        if (!$type){
+            throw ExceptionFactory::WrongFormatException("缺少参数type");
+        }
+
+        $entityLists = $this->riskidService->handleGetFileLists($type);
         return new JsonResponse($entityLists);
     }
 
