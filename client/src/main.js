@@ -4,8 +4,9 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import router from './router/index'
 // 代码高亮
+
 import hl from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css'
+
 // 代码复制组件
 import clipboard from 'clipboard'
 // 创建事件总线实例
@@ -27,17 +28,20 @@ echarts.use([
     CanvasRenderer,
     LabelLayout
 ]);
+// markdown编辑器
+import mavonEditor from 'mavon-editor'
 
 Vue.prototype.$request = request
 Vue.prototype.$echarts = echarts
 Vue.prototype.clipboard = clipboard
 // 将事件总线实例挂载到Vue原型上
 Vue.prototype.$bus = bus;
-
 Vue.config.productionTip = false
 
 Vue.use(Antd);
 
+// use
+Vue.use(mavonEditor)
 // 自定义一个代码高亮指令
 // Vue.directive('highlight', function (el) {
 //     const blocks = el.querySelectorAll('pre code')

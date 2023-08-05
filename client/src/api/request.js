@@ -63,10 +63,10 @@ export const getLog = (param) => {
         .then(res=> res)
 }
 
-export const getEntityLists = () => {
+export const getFileLists = (param) => {
     return service
         .request({
-            url: '/functional/getEntityLists',
+            url: '/functional/getFileLists' + param,
             method: 'get',
         })
         .then(res=> res)
@@ -76,6 +76,15 @@ export const generateCode = (entityName,type) => {
     return service
         .request({
             url: '/functional/generateCode?entity_name='+entityName+"&type="+type,
+            method: 'get',
+        })
+        .then(res=> res)
+}
+
+export const getSlateDoc = (param) => {
+    return service
+        .request({
+            url: '/functional/generateSlateDoc'+param,
             method: 'get',
         })
         .then(res=> res)
