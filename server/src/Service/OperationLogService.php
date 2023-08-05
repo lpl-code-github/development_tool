@@ -25,6 +25,13 @@ class OperationLogService
                 "/functional/generatePostmanTest",
                 "/functional/generateCode"
             ]
+        ],
+        [
+            "id" => "3",
+            "name" => "数据库/测试",
+            "route" => [
+                "/resource/databaseBackup"
+            ]
         ]
     ];
 
