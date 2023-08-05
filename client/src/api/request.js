@@ -62,3 +62,21 @@ export const getLog = (param) => {
         })
         .then(res=> res)
 }
+
+export const getEntityLists = () => {
+    return service
+        .request({
+            url: '/functional/getEntityLists',
+            method: 'get',
+        })
+        .then(res=> res)
+}
+
+export const generateCode = (entityName,type) => {
+    return service
+        .request({
+            url: '/functional/generateCode?entity_name='+entityName+"&type="+type,
+            method: 'get',
+        })
+        .then(res=> res)
+}
