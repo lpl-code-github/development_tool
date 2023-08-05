@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Factory\ExceptionFactory;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Process\Process;
 
 class SystemService
