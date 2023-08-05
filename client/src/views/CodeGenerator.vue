@@ -76,11 +76,12 @@ export default {
         this.$request.generateCode(this.selectEntity,this.selectedType).then(res=>{
           if (res.status === 200){
             this.codeText = res.data
+            this.loading = false
           }
-          this.loading = false
         })
       }else {
         this.$message.warning("请先选择实体类")
+        this.loading = false
       }
     },
     getEntityLists(){

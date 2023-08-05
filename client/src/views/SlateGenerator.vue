@@ -60,20 +60,30 @@ export default {
   created() {
     this.$bus.$on('markdownInput', (newVal) => {
       this.docContent = newVal
+      if (newVal === "") {
+        localStorage.removeItem("selected_controller")
+      }
     });
     this.getControllerLists()
 
   },
   mounted() {
-    var editDoc = sessionStorage.getItem("edit_doc");
+    var editDoc = localStorage.getItem("edit_doc");
     if (editDoc !== null && editDoc !== "") {
       this.docContent = editDoc
+
     }
 
-    var selectedController = sessionStorage.getItem("selected_controller");
+    var selectedController = localStorage.getItem("selected_controller");
     if (selectedController !== null && selectedController !== "") {
-      this.existSelectController = true
-      this.selectedController = selectedController
+      if (editDoc !== null && editDoc === "") {
+        this.docContent = editDoc
+        this.docContent = editDoc
+        this.existSelectController = false
+      } else {
+        this.existSelectController = true
+        this.selectedController = selectedController
+      }
     }
   },
   methods: {
@@ -90,6 +100,10 @@ export default {
         this.buttonConfirmIsDisabled = false
         return
       }
+      this.existSelectController = false
+      this.selectedController = ""
+      this.buttonConfirmIsDisabled = true
+      localStorage.removeItem("selected_controller");
       this.handleGetSlateDoc()
     },
     handleGetSlateDoc(controller) {
@@ -106,10 +120,10 @@ export default {
       })
     },
     confirm(e) {
-      this.handleGetSlateDoc()
       this.componentKey += 1
       this.existSelectController = false
-      sessionStorage.removeItem("selected_controller")
+      localStorage.removeItem("selected_controller")
+      this.handleGetSlateDoc()
     },
     cancel(e) {
     },
@@ -119,9 +133,7 @@ export default {
       );
     },
     handleSelect(value, option) {
-      this.selectedController = value;
-      sessionStorage.setItem("selected_controller", value)
-      this.selectedController = value;
+      localStorage.setItem("selected_controller", value)
       if (this.docContent !== "") {
         var confirm = this.$confirm({
           title: '提示',
@@ -129,17 +141,19 @@ export default {
           okText: '确认',
           cancelText: '取消',
           onOk: () => { // 使用箭头函数来保持this的指向
-            this.handleGetSlateDoc(value)
             this.existSelectController = true
+            this.selectedController = value
+            this.handleGetSlateDoc(value)
             confirm.destroy();
           },
           onCancel() {
             confirm.destroy();
           },
         });
-
         return
       }
+      this.existSelectController = true
+      this.selectedController = value
       this.handleGetSlateDoc(value)
     }
   }

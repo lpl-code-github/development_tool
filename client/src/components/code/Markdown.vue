@@ -39,7 +39,7 @@ export default {
       // render 为 markdown 解析后的结果[html]
       // this.html = render
       // 保存
-      sessionStorage.setItem("edit_doc",value)
+      localStorage.setItem("edit_doc",value)
     },
   }
 }
