@@ -37,6 +37,30 @@ class GenerateUtil
     }
 
     /**
+     * 将一个单词转为复数
+     * @param $word
+     * @return string
+     */
+    public static function plural($word): string
+    {
+        $plural = $word;
+        $lastChar = strtolower(substr($word, -1));
+
+        switch ($lastChar) {
+            case 'y':
+                $plural = substr($word, 0, -1) . 'ies';
+                break;
+            case 's':
+                $plural .= 'es';
+                break;
+            default:
+                $plural .= 's';
+        }
+
+        return $plural;
+    }
+
+    /**
      * 去除Controller字符
      * @param $str
      * @return array|string|string[]|null
