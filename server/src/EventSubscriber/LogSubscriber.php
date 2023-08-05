@@ -12,6 +12,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class LogSubscriber implements EventSubscriberInterface
 {
+    const FILTER_ARRAY=[
+        "/functional/generatePostmanTest"
+    ];
     private OperationLogFactory $operationLogFactory;
     private OperationLogService $operationLogService;
     private $errorMessage = null;
@@ -35,8 +38,16 @@ class LogSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $response = $event->getResponse();
         $method = $request->getMethod();
+        // 接口名
+        $sep_array = explode('/index.php', $_SERVER['PHP_SELF']);
+        if ($sep_array[0] != '') {
+            $temp_array = explode($sep_array[0], $request->getRequestUri());
+            $uri = end($temp_array);
+        } else {
+            $uri = $request->getRequestUri();
+        }
         // Only process POST, DELETE, PUT, PATCH requests
-        if (in_array($method, ['POST', 'DELETE', 'PUT', 'PATCH'])) {
+        if (in_array($method, ['POST', 'DELETE', 'PUT', 'PATCH']) && !in_array($uri, self::FILTER_ARRAY)) {
             // 创建日志
             $operationLog = $this->operationLogFactory->create($request, $response, $this->errorMessage);
             // 保存日志

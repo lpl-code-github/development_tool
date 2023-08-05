@@ -117,14 +117,14 @@ class RiskidService
                 if (preg_match('/if\s*\(\s*\$this->environment\s*!==\s*[\'"]?dev[\'"]?/', $line) ||
                     preg_match('/if\s*\(\s*\$this->environment\s*==\s*[\'"]?dev[\'"]?/', $line)) {
                     if ($env == 'dev') {
-                        $line = $flag ? '        if($this->environm ent !== \'dev\'){' : '        if($this->environment == \'dev\'){';
+                        $line = $flag ? '        if($this->environment !== \'dev\'){' : '        if($this->environment == \'dev\'){';
                     } elseif ($env == 'test') {
                         $line = $flag ? '        if($this->environment == \'dev\'){' : '        if($this->environment !== \'dev\'){';
                     }
                     break;
                 }
             }
-            file_put_contents($filePath, implode("\n", $envFileLines) . "\n");
+            file_put_contents($filePath, implode("\n", $envFileLines) );
             return true;
         } catch (\Exception $exception) {
             throw ExceptionFactory::InternalServerException($exception->getMessage());
@@ -154,7 +154,7 @@ class RiskidService
     }
 
     /**
-     * 导入或移除Riskid中的TestController.php
+     * 导入或移除Riskid中的PostmanTestController.php
      * @param bool $flag 如果是true则导入，否则移除
      * @return bool
      * @throws \Exception
@@ -186,7 +186,7 @@ class RiskidService
     }
 
     /**
-     * 查看Riskid中是否存在TestController.php
+     * 查看Riskid中是否存在PostmanTestController.php
      *
      * @return bool
      * @throws \Exception
@@ -229,6 +229,9 @@ class RiskidService
         $result = [];
 
         foreach ($files as $file) {
+            if ($file->getBasename() == "PostmanTestController.php"){
+                continue;
+            }
             $result[] = $file->getBasename();
         }
 

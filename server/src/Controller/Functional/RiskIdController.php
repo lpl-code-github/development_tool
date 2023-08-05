@@ -54,6 +54,9 @@ class RiskIdController extends AbstractController
             if ($name == '_preview_error'){
                 continue;
             }
+            if ($item['path'] == '/backup' || $item['path'] == '/reduction'){
+                continue;
+            }
             if(strpos($item['path'], '/file/') !== false){
                 $fileApiCount ++;
             }elseif(strpos($item['path'], '/resource/') !== false){
@@ -69,6 +72,7 @@ class RiskIdController extends AbstractController
             }else {
                 $othersApiCount ++;
             }
+
             $result = [
                 'name' => $name,
                 'path' => $item['path'],
