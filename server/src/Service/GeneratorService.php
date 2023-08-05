@@ -8,6 +8,7 @@ use App\Service\Generator\GenerateDtoCodeService;
 use App\Service\Generator\GenerateFactoryCodeService;
 use App\Service\Generator\GeneratePostmanTestService;
 use App\Service\Generator\GenerateServiceCodeService;
+use App\Service\Generator\GenerateSlateService;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -19,6 +20,8 @@ class GeneratorService
     private GenerateFactoryCodeService $generateFactoryCodeService;
     private GenerateControllerCodeService $generateControllerCodeService;
     private GenerateServiceCodeService $generateServiceCodeService;
+    private GenerateSlateService $generateSlateService;
+    private RiskidService $riskidService;
     private ParameterBagInterface $parameterBag;
 
     public function __construct(
@@ -27,6 +30,8 @@ class GeneratorService
         GenerateFactoryCodeService    $generateFactoryCodeService,
         GenerateControllerCodeService $generateControllerCodeService,
         GenerateServiceCodeService    $generateServiceCodeService,
+        GenerateSlateService          $generateSlateService,
+        RiskidService                 $riskidService,
         ParameterBagInterface         $parameterBag
     )
     {
@@ -35,6 +40,8 @@ class GeneratorService
         $this->generateFactoryCodeService = $generateFactoryCodeService;
         $this->generateControllerCodeService = $generateControllerCodeService;
         $this->generateServiceCodeService = $generateServiceCodeService;
+        $this->generateSlateService = $generateSlateService;
+        $this->riskidService = $riskidService;
         $this->parameterBag = $parameterBag;
     }
 
@@ -144,6 +151,39 @@ class GeneratorService
         }
 
         return $serviceCode;
+    }
+
+    /**
+     * 生成slate文档
+     * @param $controller
+     * @return string
+     */
+    public function handleGeneratorSlateDoc($controller): string
+    {
+
+        if (!$controller) {
+            return $this->generateSlateService->generateDefaultSlate();
+        }
+
+        $apiInfos = $this->riskidService->getApiInfos();
+        $controllerName = $this->removePhpExtension($controller);// 去掉.php的controller名称
+        $results = [];
+        foreach ($apiInfos as $name => $item) {
+            if ($name == '_preview_error') {
+                continue;
+            }
+            if (strpos($item['defaults']['_controller'], $controllerName) !== false) {
+                $result = [
+                    'name' => $name,
+                    'path' => $item['path'],
+                    'method' => $item['method'],
+                ];
+                $results[] = $result;
+            }
+        }
+
+        return $this->generateSlateService->generateSlateByController($controllerName,$results);
+
     }
 
     /**

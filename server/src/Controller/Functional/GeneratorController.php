@@ -50,7 +50,7 @@ class GeneratorController extends BaseController
      * @throws \ReflectionException
      * @throws \Exception
      */
-    public function executeGenerateDtoCode(Request $request): Response
+    public function executeGenerateCode(Request $request): Response
     {
         $entityFileName = $request->query->get('entity_name') ?? null;
         $type = $request->query->get('type') ?? null;
@@ -78,6 +78,20 @@ class GeneratorController extends BaseController
                 throw ExceptionFactory::WrongFormatException("参数type不支持");
         }
 
+        $response = new Response($result);
+        $response->headers->set('Content-Type', 'text/javascript');
+
+        return $response;
+    }
+
+    /**
+     * @Route("/generateSlateDoc", name="生成slate文档", methods={"GET"})
+     */
+    public function executeGenerateSlateDoc(Request $request): Response
+    {
+        $controller = $request->query->get('controller') ?? null;
+
+        $result = $this->generatorService->handleGeneratorSlateDoc($controller);
         $response = new Response($result);
         $response->headers->set('Content-Type', 'text/javascript');
 
