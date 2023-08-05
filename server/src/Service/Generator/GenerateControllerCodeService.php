@@ -5,6 +5,7 @@ namespace App\Service\Generator;
 use App\Utils\GenerateUtil;
 use ReflectionClass;
 use ReflectionException;
+use Doctrine\Inflector\InflectorFactory;
 
 class GenerateControllerCodeService
 {
@@ -19,7 +20,8 @@ class GenerateControllerCodeService
         $reflectionClass = new ReflectionClass($entityClass);
         $className = $reflectionClass->getShortName();
         $classNameLower = GenerateUtil::lowerFirst($className); // 小写
-        $classNameComplex = GenerateUtil::plural($className);// 大写复数形式
+        $inflector = InflectorFactory::create()->build();
+        $classNameComplex = $inflector->singularize($className);// 大写复数形式
 
 
         // 定义php头部
@@ -88,8 +90,9 @@ EOF;
     private function generateGetCode(string $className): string
     {
         $classNameLower = GenerateUtil::lowerFirst($className); // 小写
-        $classNameUpperComplex = GenerateUtil::plural($className);// 大写复数形式
-        $classNameComplex = GenerateUtil::plural($classNameLower);// 小写复数形式
+        $inflector = InflectorFactory::create()->build();
+        $classNameUpperComplex = $inflector->singularize($className);// 大写复数形式
+        $classNameComplex = $inflector->singularize($classNameLower);// 小写复数形式
 
         return <<<EOF
     /**
@@ -127,8 +130,9 @@ EOF;
     private function generatePostCode(string $className): string
     {
         $classNameLower = GenerateUtil::lowerFirst($className); // 小写
-        $classNameUpperComplex = GenerateUtil::plural($className);// 大写复数形式
-        $classNameComplex = GenerateUtil::plural($classNameLower);// 小写复数形式
+        $inflector = InflectorFactory::create()->build();
+        $classNameUpperComplex = $inflector->singularize($className);// 大写复数形式
+        $classNameComplex = $inflector->singularize($classNameLower);// 小写复数形式
 
         return <<<EOF
     /**
@@ -167,8 +171,9 @@ EOF;
     private function generatePutCode(string $className): string
     {
         $classNameLower = GenerateUtil::lowerFirst($className); // 小写
-        $classNameUpperComplex = GenerateUtil::plural($className);// 大写复数形式
-        $classNameComplex = GenerateUtil::plural($classNameLower);// 小写复数形式
+        $inflector = InflectorFactory::create()->build();
+        $classNameUpperComplex = $inflector->singularize($className);// 大写复数形式
+        $classNameComplex = $inflector->singularize($classNameLower);// 小写复数形式
 
         return <<<EOF
     /**
@@ -198,8 +203,9 @@ EOF;
     private function generateDeleteCode(string $className): string
     {
         $classNameLower = GenerateUtil::lowerFirst($className); // 小写
-        $classNameUpperComplex = GenerateUtil::plural($className);// 大写复数形式
-        $classNameComplex = GenerateUtil::plural($classNameLower);// 小写复数形式
+        $inflector = InflectorFactory::create()->build();
+        $classNameUpperComplex = $inflector->singularize($className);// 大写复数形式
+        $classNameComplex = $inflector->singularize($classNameLower);// 小写复数形式
 
         return <<<EOF
     /**
