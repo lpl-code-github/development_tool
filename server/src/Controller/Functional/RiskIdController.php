@@ -3,17 +3,15 @@
 namespace App\Controller\Functional;
 
 
+use App\Controller\BaseController;
 use App\Factory\ExceptionFactory;
 use App\Service\RiskidService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-class RiskIdController extends AbstractController
+class RiskIdController extends BaseController
 {
     private RiskidService $riskidService;
     public function __construct(
@@ -169,16 +167,18 @@ class RiskIdController extends AbstractController
         $type = $data["type"] ?? null;
         $flag = (bool) $data["flag"] ?? null;
 
-        if (!isset($type) || !isset($flag)) {
-            throw ExceptionFactory::WrongFormatException("参数缺失");
-        }
-        $validTypes = ['dev_env_error_message', 'test_env_error_message', 'test_env', 'back_api'];
-        if (!in_array($type, $validTypes)) {
-            throw ExceptionFactory::WrongFormatException("type参数值不合法");
-        }
-        if (!is_bool($flag)){
-            throw ExceptionFactory::WrongFormatException("flag参数只能是bool类型");
-        }
+        $this->validateNecessaryParameters($params, [
+            'data' => self::OBJECT_TYPE
+        ]);
+        $this->validateNecessaryParameters($data, [
+            'type' => self::STRING_TYPE,
+            'flag' => self::BOOL_TYPE
+        ]);
+
+        $this->validateAllowValue($type,[
+            'dev_env_error_message', 'test_env_error_message', 'test_env', 'back_api'
+        ],"参数type值非法");
+
         switch ($type){
             case 'test_env' :
                 if ($flag){
@@ -202,6 +202,16 @@ class RiskIdController extends AbstractController
         }
         // 如果没有抛出异常就是true
         $resultArray['data']['handle'] =true;
+        return new JsonResponse($resultArray);
+    }
+
+    /**
+     * @Route("/getDatabaseList", name="获取RiskId所在DB中所有的数据库", methods={"GET"})
+     * @throws \Exception
+     */
+    public function getDatabaseList(): JsonResponse
+    {
+        $resultArray['data'] = $this->riskidService->handleGetDataBaseList();
         return new JsonResponse($resultArray);
     }
 }
