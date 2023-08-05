@@ -89,3 +89,31 @@ export const getSlateDoc = (param) => {
         })
         .then(res=> res)
 }
+
+export const getDatabaseList = () => {
+    return service
+        .request({
+            url: '/functional/getDatabaseList',
+            method: 'get',
+        })
+        .then(res=> res)
+}
+
+export const postDatabaseBackup = (param) => {
+    return service
+        .request({
+            url: '/resource/databaseBackup',
+            method: 'post',
+            data:param
+        })
+        .then(res=> res)
+}
+
+export const getDatabaseBackup = () => {
+    return service
+        .request({
+            url: '/resource/databaseBackup',
+            method: 'get',
+        })
+        .then(res=> res)
+}
