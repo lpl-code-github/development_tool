@@ -60,12 +60,14 @@ export default {
   created() {
     this.$bus.$on('markdownInput', (newVal) => {
       this.docContent = newVal
-      if (newVal === "") {
-        localStorage.removeItem("selected_controller")
-      }
     });
     this.getControllerLists()
 
+  },
+  beforeDestroy() {
+    if (this.docContent === "") {
+      localStorage.removeItem("selected_controller")
+    }
   },
   mounted() {
     var editDoc = localStorage.getItem("edit_doc");
