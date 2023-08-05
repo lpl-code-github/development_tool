@@ -1,6 +1,6 @@
 <template>
   <div class="my-code">
-     <pre v-highlight style="margin: 0!important;">
+     <pre v-myHighlight style="margin: 0!important;">
         <code style="height: 60vh" class="lang-javascript" v-text="codeText"></code>
     </pre>
   </div>
@@ -39,7 +39,8 @@ export default {
 </script>
 
 <style scoped>
-@import 'highlight.js/styles/atom-one-dark.css';
+@import 'highlight.js/styles/github.css';
+/*@import 'highlight.js/styles/atom-one-dark.css';*/
 .my-code{
   margin-top: -20px!important;
   overflow-y: visible;

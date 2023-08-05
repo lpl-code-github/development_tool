@@ -14,7 +14,7 @@
 import zhCN from 'ant-design-vue/es/locale/zh_CN'; //引入antd中文包
 import moment from 'moment';
 //引入moment
-moment.locale('zh-cn');//配置moment中文环境
+moment.locale('zh-cn');
 export default {
   name: "Index",
   data(){
