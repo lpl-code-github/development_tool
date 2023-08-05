@@ -28,14 +28,15 @@ class RiskidService
      *
      * @return array
      */
-    public function getApiInfos(): array
+    public function getApiInfos()
     {
         $process = Process::fromShellCommandline($this->parameterBag->get('debug_router_command'));
         // $process->setWorkingDirectory('/var/app/server/');// 测试用
         $process->setWorkingDirectory($this->parameterBag->get('riskid_code_path'));
         $process->run();
-        $output = $process->getOutput();
-        return json_decode($output, true);
+
+        return $process->isSuccessful()?  json_decode($process->getOutput(), true) : [];
+
     }
 
     /**
@@ -90,7 +91,7 @@ class RiskidService
                 }
             }
             file_put_contents($envFile, implode("\n", $envFileLines) . "\n");
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             throw ExceptionFactory::InternalServerException($exception->getMessage());
         }
     }
@@ -103,7 +104,7 @@ class RiskidService
      * @return bool
      * @throws \Exception
      */
-    public function editErrorMessage(string $env,bool $flag): bool
+    public function editErrorMessage(string $env, bool $flag): bool
     {
         $filePath = $this->parameterBag->get("riskid_exception_subscriber_php_path");
         try {
@@ -115,17 +116,17 @@ class RiskidService
             foreach ($envFileLines as &$line) {
                 if (preg_match('/if\s*\(\s*\$this->environment\s*!==\s*[\'"]?dev[\'"]?/', $line) ||
                     preg_match('/if\s*\(\s*\$this->environment\s*==\s*[\'"]?dev[\'"]?/', $line)) {
-                    if ($env == 'dev'){
-                        $line = $flag ? '        if($this->environm ent !== \'dev\'){':'        if($this->environment == \'dev\'){';
-                    }elseif ($env == 'test'){
-                        $line = $flag ? '        if($this->environment == \'dev\'){':'        if($this->environment !== \'dev\'){';
+                    if ($env == 'dev') {
+                        $line = $flag ? '        if($this->environm ent !== \'dev\'){' : '        if($this->environment == \'dev\'){';
+                    } elseif ($env == 'test') {
+                        $line = $flag ? '        if($this->environment == \'dev\'){' : '        if($this->environment !== \'dev\'){';
                     }
                     break;
                 }
             }
             file_put_contents($filePath, implode("\n", $envFileLines) . "\n");
             return true;
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             throw ExceptionFactory::InternalServerException($exception->getMessage());
         }
     }
@@ -168,18 +169,18 @@ class RiskidService
             if ($flag) {
                 if (!$filesystem->exists($target)) {
                     $filesystem->copy(
-                        BASE_PATH.$source,
+                        BASE_PATH . $source,
                         $target
                     );
                 }
-            }else{
+            } else {
                 if ($filesystem->exists($target)) {
                     $filesystem->remove($target);
                 }
             }
 
             return true;
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             throw ExceptionFactory::InternalServerException($exception->getMessage());
         }
     }
@@ -195,21 +196,34 @@ class RiskidService
         try {
             $filesystem = new Filesystem();
             return $filesystem->exists($this->parameterBag->get('target_test_controller_path'));
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             throw ExceptionFactory::InternalServerException($exception->getMessage());
         }
     }
 
     /**
-     * 获取Riskid的所有entity文件
+     * 获取Riskid某个目录下的所有文件
+     * @param $type
      * @return array
+     * @throws \Exception
      */
-    public function handleGetEntityLists(): array
+    public function handleGetFileLists($type): array
     {
-        $finder = new Finder();
+        switch ($type){
+            case "entity":
+                $path = $this->parameterBag->get('risk_id_entity_path');
+                 break;
+            case "controller":
+                $path = $this->parameterBag->get('risk_id_controller_path');
+                break;
+            default:
+                throw ExceptionFactory::InternalServerException("type错误");
+        }
 
+        $finder = new Finder();
+        // 因为新的riskid的controller分为了不同的目录，因此选择使用$finder去查找目录下所有文件，包括子目录
         $files = $finder->files()
-            ->in($this->parameterBag->get('risk_id_entity_path'))
+            ->in($path)
             ->name('*.php');
 
         $result = [];
