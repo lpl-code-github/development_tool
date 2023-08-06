@@ -21,3 +21,7 @@ a {
 .my-switch{
     margin-top: 10px;
 }
+
+.ant-notification-notice-with-icon .ant-notification-notice-description {
+    word-wrap: break-word !important;
+}
