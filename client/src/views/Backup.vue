@@ -117,8 +117,17 @@ export default {
       var tagFilterChecked = filters.db_name
       if (filters.db_name !== undefined && filters.db_name.length === 0) {
         this.tableData = this.backupList
+        //重置columns的filteredValue
+        var columns = this.columns;
+        columns.forEach(item => {
+          if (item.key === 'db_name') {
+            this.$set(item, 'filteredValue',[])
+          }
+        })
+        this.$set(this, 'columns', [...columns]);
         return
       }
+
       if (tagFilterChecked !== undefined) {
         this.tableData = this.backupList.filter(item => {
           return tagFilterChecked.includes(item.db_name);
