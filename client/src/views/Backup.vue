@@ -16,7 +16,7 @@
 
     <div class="my-s-table">
       <a-table
-          :key = "componentKey"
+          :key="componentKey"
           :columns="columns"
           :data-source="tableData"
           style="height: 40vh"
@@ -39,7 +39,7 @@
                 @change="e => handleChangeEdit(e.target.value, record.key, col)"
             />
             <template v-else>
-              {{ text === "" || text === null ? "/" : text}}
+              {{ text === "" || text === null ? "/" : text }}
             </template>
           </div>
         </template>
@@ -88,7 +88,7 @@ export default {
           title: '数据库', width: 200, dataIndex: 'db_name',
           key: 'db_name',
           filters: [],
-          filteredValue:[]
+          filteredValue: []
         },
         {
           title: '创建时间', width: 150, dataIndex: 'created_at',
@@ -105,7 +105,7 @@ export default {
       tableData: [],
       cacheData: [],
       editingKey: '',
-      componentKey:0,
+      componentKey: 0,
     }
   },
   created() {
@@ -192,7 +192,7 @@ export default {
             var filters = [...item.filters]; // 创建 filters 的副本
             const existingTag = filters.find(filter => filter.text === newData.db_name);
             if (!existingTag) {
-              filters.push({ text: newData.db_name, value: newData.db_name });
+              filters.push({text: newData.db_name, value: newData.db_name});
             }
             item.filters = filters;
           }
@@ -201,7 +201,7 @@ export default {
 
         // 更新tableData
         this.tableData = [...this.backupList];
-        this.cacheData = this.tableData.map(item => ({ ...item })); // 更新 cacheData
+        this.cacheData = this.tableData.map(item => ({...item})); // 更新 cacheData
       }
     },
     async getDatabaseList() {
@@ -280,65 +280,90 @@ export default {
         this.tableData = newData;
       }
     },
-    importDb(key){
-      var message = this.$message
-      var target = this.cacheData.find(item => key === item.key);
-      var param = {
-        data:{
-          id:target.id
-        }
-      }
-      var loadingMessage = message.loading('正在导入数据库，该操作有点耗时，请等待....', 0)
-      this.$request.importDatabaseBackup(param).then(res=>{
-        if (res.status === 200){
-          message.success("导入成功")
-          setTimeout(loadingMessage, 0);
-        }else {
-          setTimeout(loadingMessage, 0);
-        }
-      })
+    importDb(key) {
+      this.$confirm({
+        title: '确认导入数据库吗？',
+        content: h => <div style="color:red;">这将会覆盖您当前的数据库</div>,
+        okText: '导入',
+        cancelText: '不了',
+        onOk:()=> {
+          var message = this.$message
+          var target = this.cacheData.find(item => key === item.key);
+          var param = {
+            data: {
+              id: target.id
+            }
+          }
+          var loadingMessage = message.loading('正在导入数据库，该操作有点耗时，请等待....', 0)
+          this.$request.importDatabaseBackup(param).then(res => {
+            if (res.status === 200) {
+              message.success("导入成功")
+              setTimeout(loadingMessage, 0);
+            } else {
+              setTimeout(loadingMessage, 0);
+            }
+          })
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+        class: 'test',
+      });
+
     },
-    deleteDatabaseBackup(key){
-      console.log(this.columns)
-      var target = this.cacheData.find(item => key === item.key);
-      var param = {
-        data:{
-          id:target.id
-        }
-      }
-      this.$request.deleteDatabaseBackup(param).then(res=>{
-        if (res.status === 200){
-          // 删除backupList，重新设置tableData
-          const newBackupList = [...this.backupList]
-          this.backupList = newBackupList.filter(item => item.key !== key);
-          this.tableData = [...this.backupList]
-
-          this.$message.success("删除成功")
-
-          // 重新分配筛选器
-          const dbFilters = [];
-          this.backupList.forEach(item => {
-            const existingTag = dbFilters.find(filter => filter.text === item.db_name);
-            if (!existingTag) {
-              dbFilters.push({text: item.db_name, value: item.db_name});
+    deleteDatabaseBackup(key) {
+      this.$confirm({
+        title: '确认删除备份吗?',
+        content: '将会删除您的SQL备份文件',
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '不了',
+        onOk: () => {
+          var target = this.cacheData.find(item => key === item.key);
+          var param = {
+            data: {
+              id: target.id
             }
-            item.key = item.id
-          })
-          var columns = this.columns;
-          columns.forEach(item => {
-            if (item.key === 'db_name') {
-              item.filters = [...dbFilters]
-              this.$set(item, 'filteredValue', [])
+          }
+          this.$request.deleteDatabaseBackup(param).then(res => {
+            if (res.status === 200) {
+              // 删除backupList，重新设置tableData
+              const newBackupList = [...this.backupList]
+              this.backupList = newBackupList.filter(item => item.key !== key);
+              this.tableData = [...this.backupList]
+
+              this.$message.success("删除成功")
+
+              // 重新分配筛选器
+              const dbFilters = [];
+              this.backupList.forEach(item => {
+                const existingTag = dbFilters.find(filter => filter.text === item.db_name);
+                if (!existingTag) {
+                  dbFilters.push({text: item.db_name, value: item.db_name});
+                }
+                item.key = item.id
+              })
+              var columns = this.columns;
+              columns.forEach(item => {
+                if (item.key === 'db_name') {
+                  item.filters = [...dbFilters]
+                  this.$set(item, 'filteredValue', [])
+                }
+              })
+              this.$set(this, 'columns', [...columns]);
+
+              // 重新分配cacheData
+              this.cacheData = this.tableData.map(item => ({...item}));
+            } else {
+              this.$message.error("删除失败")
             }
           })
-          this.$set(this, 'columns', [...columns]);
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
 
-          // 重新分配cacheData
-          this.cacheData = this.tableData.map(item => ({...item}));
-        }else {
-          this.$message.error("删除失败")
-        }
-      })
     }
   }
 }

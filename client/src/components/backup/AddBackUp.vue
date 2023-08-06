@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-modal v-model="visible" title="Title" on-ok="handleOk" :afterClose="afterClose" :maskClosable="false">
+    <a-modal v-model="visible" title="备份数据库" on-ok="handleOk"  :afterClose="afterClose" :maskClosable="false">
       <template slot="footer">
         <a-button key="back" @click="handleCancel">
           取消
@@ -20,7 +20,7 @@
           <a-input v-model="form.name"/>
         </a-form-model-item>
         <a-form-model-item label="描述" prop="desc">
-          <a-input v-model="form.desc" type="textarea"/>
+          <a-input v-model="form.desc" rows="4" type="textarea"/>
         </a-form-model-item>
         <a-form-model-item label="DB" prop="db">
           <a-select
@@ -137,3 +137,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+/deep/ .ant-modal-body{
+  max-height: 400px;
+  overflow-y: auto;
+}
+</style>
