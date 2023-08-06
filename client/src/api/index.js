@@ -52,7 +52,8 @@ service.interceptors.response.use(
 
             notification.error({
                 message: '错误的请求',
-                description: error.response.data.message
+                description: error.response.data.message,
+                duration:null
             });
         }
 
