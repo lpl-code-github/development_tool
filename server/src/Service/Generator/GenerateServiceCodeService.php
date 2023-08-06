@@ -166,7 +166,7 @@ EOF;
 
         // example
         //if (array_key_exists('name', \$params)) {
-        //    \$test->setName(\$params["name"]);
+        //    \${$classNameLower}->setName(\$params["name"]);
         //}
 
         \$this->entityManager->persist(\$$classNameLower);
