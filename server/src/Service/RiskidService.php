@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Factory\ExceptionFactory;
+use App\Service\DB\DBService;
 use PDO;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -11,16 +12,16 @@ use Symfony\Component\Process\Process;
 
 class RiskidService
 {
-    /**
-     * @var ParameterBagInterface
-     */
     private $parameterBag;
+    private DBService $DBService;
 
     public function __construct(
-        ParameterBagInterface $parameterBag
+        ParameterBagInterface $parameterBag,
+        DBService $DBService
     )
     {
         $this->parameterBag = $parameterBag;
+        $this->DBService = $DBService;
     }
 
     /**
@@ -80,49 +81,7 @@ class RiskidService
      */
     public function handleGetDataBaseList(): array
     {
-        $envFile = $this->parameterBag->get("riskid_env_path");
-
-        $dbHost = "";
-        $dbUser = "";
-        $dbPwd = "";
-        $envFileLines = file($envFile, FILE_IGNORE_NEW_LINES);
-        foreach ($envFileLines as $line) {
-            if (strpos($line, 'DB_HOST=') === 0) {
-                $dbHost = substr($line, strlen('DB_HOST='));
-            }
-            if (strpos($line, 'DB_USER=') === 0) {
-                $dbUser = substr($line, strlen('DB_USER='));
-            }
-            if (strpos($line, 'DB_PWD=') === 0) {
-                $dbPwd = substr($line, strlen('DB_PWD='));
-            }
-        }
-
-        $dsn = "mysql:host=" . $dbHost;
-
-        $connection = new PDO($dsn, $dbUser, $dbPwd);
-        $query = $connection->prepare('SHOW DATABASES');
-        if (!$query->execute()) {
-            throw ExceptionFactory::InternalServerException("查询语句执行错误：SHOW DATABASES");
-        }
-        $dbs = $query->fetchAll();
-
-        $result = array();
-        // 去除系统数据库以及本项目的数据库
-        foreach ($dbs as $db){
-            if (in_array($db['Database'],[
-                "information_schema",
-                "develop_tool_server",
-                "mysql",
-                "performance_schema",
-                "sys"
-            ])){
-                continue;
-            }
-            $result[] = $db['Database'];
-        }
-
-        return $result;
+        return $this->DBService->getDBList();
     }
 
     /**

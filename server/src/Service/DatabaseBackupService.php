@@ -2,31 +2,35 @@
 
 namespace App\Service;
 
+use App\Dto\DatabaseBackupDto;
+use App\Entity\DatabaseBackup;
 use App\Factory\DatabaseBackupFactory;
 use App\Factory\ExceptionFactory;
+use App\Service\DB\DBService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\DatabaseBackup;
-use App\Dto\DatabaseBackupDto;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Process;
+
 
 class DatabaseBackupService
 {
     private EntityManagerInterface $entityManager;
     private DatabaseBackupFactory $databaseBackupFactory;
     private ParameterBagInterface $parameterBag;
+    private DBService $DBService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         DatabaseBackupFactory  $databaseBackupFactory,
-        ParameterBagInterface  $parameterBag
+        ParameterBagInterface  $parameterBag,
+        DBService $DBService
     )
     {
         $this->entityManager = $entityManager;
         $this->databaseBackupFactory = $databaseBackupFactory;
         $this->parameterBag = $parameterBag;
+        $this->DBService = $DBService;
     }
 
     /**
@@ -71,13 +75,13 @@ class DatabaseBackupService
         $desc = $data["desc"] ?? null;
         $db = $data["db"] ?? null;
 
-        list($dbHost, $dbUser, $dbPwd) = $this->getDBInfo();
+        list($dbHost, $dbUser, $dbPwd) = $this->DBService->getDBInfo();
         $currentDateTime = new DateTime();
         $currentDateTime->modify('+8 hours');
         $formattedDateTime = $currentDateTime->format('YmdHis');
 
         $exportPath = BASE_PATH . $this->parameterBag->get("backup_db_sql_path") . $formattedDateTime . ".sql";
-        $mysqlDump = $this->mysqlDump($dbHost, $dbUser, $dbPwd, $db,$exportPath);
+        $mysqlDump = $this->DBService->mysqlDump($dbHost, $dbUser, $dbPwd, $db,$exportPath);
         if (!$mysqlDump) {
             throw ExceptionFactory::InternalServerException("备份数据库出错");
         }
@@ -181,7 +185,7 @@ class DatabaseBackupService
     public function handleImportDb($data): bool
     {
         // 获取数据库信息
-        list($dbHost, $dbUser, $dbPwd) = $this->getDBInfo();
+        list($dbHost, $dbUser, $dbPwd) = $this->DBService->getDBInfo();
 
         // 获取备份文件信息
         $databaseBackup = $this->entityManager->getRepository(DatabaseBackup::class)->findOneById($data['id']);
@@ -199,25 +203,25 @@ class DatabaseBackupService
         $currentDateTime->modify('+8 hours');
         $formattedDateTime = $currentDateTime->format('YmdHis');
         $exportPath = BASE_PATH . $this->parameterBag->get("tmp_backup_db_sql_path") . $formattedDateTime . ".sql"; // 临时备份文件
-        $mysqlDump = $this->mysqlDump($dbHost, $dbUser, $dbPwd, $dbName, $exportPath);
+        $mysqlDump = $this->DBService->mysqlDump($dbHost, $dbUser, $dbPwd, $dbName, $exportPath);
         if (!$mysqlDump) {
             throw ExceptionFactory::InternalServerException("操作前需要临时备份数据库，但是出错了");
         }
 
-        //删除数据库
-        $deleteDb = $this->deleteDb($dbHost, $dbUser, $dbPwd, $dbName);
+        // 如果存在数据库删除数据库
+        $deleteDb = $this->DBService->deleteDb($dbHost, $dbUser, $dbPwd, $dbName);
         if (!$deleteDb){
             throw ExceptionFactory::InternalServerException("删除数据库".$dbName."失败，"."当前数据库如果已经损坏，已经保留本操作前的SQL: ".$exportPath);
         }
 
         // 创建数据库
-        $createDb = $this->createDb($dbHost, $dbUser, $dbPwd, $dbName);
+        $createDb = $this->DBService->createDb($dbHost, $dbUser, $dbPwd, $dbName);
         if (!$createDb){
             throw ExceptionFactory::InternalServerException("创建数据库".$dbName."失败，"."当前数据库如果已经损坏，已经保留本操作前的SQL: ".$exportPath);
         }
 
         // 导入数据
-        $importDb = $this->importDb($dbHost, $dbUser, $dbPwd, $dbName, $path);
+        $importDb = $this->DBService->importDb($dbHost, $dbUser, $dbPwd, $dbName, $path);
         if (!$importDb){
             throw ExceptionFactory::InternalServerException("导入数据库".$dbName."失败，"."当前数据库如果已经损坏，已经保留本操作前的SQL: ".$exportPath);
         }
@@ -228,94 +232,6 @@ class DatabaseBackupService
         }
         return true;
     }
-
-    /**
-     * 备份数据库
-     * @param $dbHost
-     * @param $dbUser
-     * @param $dbPwd
-     * @param $dbName
-     * @param $exportPath
-     * @return bool
-     */
-    private function mysqlDump($dbHost, $dbUser, $dbPwd, $dbName, $exportPath): bool
-    {
-        $command = "mysqldump -h " . $dbHost . " -u" . $dbUser . " -p" . $dbPwd . " " . $dbName . " > " . $exportPath;
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-        return $process->isSuccessful();
-    }
-
-    /**
-     * @param string $dbHost
-     * @param string $dbUser
-     * @param string $dbPwd
-     * @param $dbName
-     * @return bool
-     */
-    private function deleteDb(string $dbHost, string $dbUser, string $dbPwd, $dbName): bool
-    {
-        $command = "mysql -h " . $dbHost . " -u " . $dbUser . " -p" . $dbPwd . " -e 'DROP DATABASE IF EXISTS " . $dbName."'";
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-        return $process->isSuccessful();
-    }
-
-    /**
-     * @param string $dbHost
-     * @param string $dbUser
-     * @param string $dbPwd
-     * @param $dbName
-     * @return bool
-     */
-    private function createDb(string $dbHost, string $dbUser, string $dbPwd, $dbName): bool
-    {
-        $command = "mysql -h " . $dbHost . " -u " . $dbUser . " -p" . $dbPwd . " -e 'CREATE DATABASE " . $dbName . " CHARACTER SET latin1 COLLATE latin1_swedish_ci'";
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-        return  $process->isSuccessful();
-    }
-
-    /**
-     * @param string $dbHost
-     * @param string $dbUser
-     * @param string $dbPwd
-     * @param $dbName
-     * @param $path
-     * @return bool
-     */
-    private function importDb(string $dbHost, string $dbUser, string $dbPwd, $dbName, $path): bool
-    {
-        $command = "mysql -h " . $dbHost . " -u " . $dbUser . " -p" . $dbPwd . " " . $dbName . " < " . $path;
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-        return $process->isSuccessful();
-    }
-
-    /**
-     * @return string[]
-     */
-    private function getDBInfo(): array
-    {
-        $envFile = $this->parameterBag->get("riskid_env_path");
-        $dbHost = "";
-        $dbUser = "";
-        $dbPwd = "";
-        $envFileLines = file($envFile, FILE_IGNORE_NEW_LINES);
-        foreach ($envFileLines as $line) {
-            if (strpos($line, 'DB_HOST=') === 0) {
-                $dbHost = substr($line, strlen('DB_HOST='));
-            }
-            if (strpos($line, 'DB_USER=') === 0) {
-                $dbUser = substr($line, strlen('DB_USER='));
-            }
-            if (strpos($line, 'DB_PWD=') === 0) {
-                $dbPwd = substr($line, strlen('DB_PWD='));
-            }
-        }
-        return array($dbHost, $dbUser, $dbPwd);
-    }
-
 
 
 }
