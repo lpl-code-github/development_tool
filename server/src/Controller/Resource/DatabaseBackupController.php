@@ -13,7 +13,7 @@ class DatabaseBackupController extends BaseController
 {
     // Define default return fields
     const RETURN_FIELD = array(
-        "name","description","db_name","path","created_at"
+        "name", "description", "db_name", "path", "created_at"
     );
 
     private DatabaseBackupService $databaseBackupService;
@@ -29,27 +29,34 @@ class DatabaseBackupController extends BaseController
     }
 
     /**
-     * @Route("/databaseBackup", name="get databaseBackup", methods={"GET"})
+     * @Route("/databaseBackup", name="获取数据库备份信息", methods={"GET"})
      * @throws \Exception
      */
     public function executeGet(Request $request): Response
     {
         $response = new Response();
+        $key = $request->query->get("key");
+
+
+        $params = array();
+        if ($key) {
+            $params["key"] = $key;
+        }
         // processing
-        $resultArray['data'] = $this->databaseBackupService->handleGetDatabaseBackup(self::RETURN_FIELD);
+        $resultArray['data'] = $this->databaseBackupService->handleGetDatabaseBackup($params,self::RETURN_FIELD);
 
         $response->setContent(json_encode($resultArray));
         return $response;
     }
 
     /**
-     * @Route("/databaseBackup", name="save databaseBackup", methods={"POST"})
+     * @Route("/databaseBackup", name="备份数据库", methods={"POST"})
      * @throws \Exception
      */
     public function executePost(Request $request): Response
     {
         $response = new Response();
-        $params = json_decode($request->getContent(),true);
+        $params = json_decode($request->getContent(), true);
         $data = $params['data'];
 
         $this->validateNecessaryParameters($params, [
@@ -61,16 +68,15 @@ class DatabaseBackupController extends BaseController
         ]);
 
         // processing
-        $resultArray['data'] = $this->databaseBackupService->handlePostDatabaseBackup($data,self::RETURN_FIELD);
+        $resultArray['data'] = $this->databaseBackupService->handlePostDatabaseBackup($data, self::RETURN_FIELD);
 
         $response->setContent(json_encode($resultArray));
         return $response;
     }
 
 
-
     /**
-     * @Route("/databaseBackup", name="update databaseBackup", methods={"PUT"})
+     * @Route("/databaseBackup", name="更新数据库备份信息", methods={"PUT"})
      * @throws \Exception
      */
     public function executePut(Request $request): Response
@@ -81,18 +87,15 @@ class DatabaseBackupController extends BaseController
         $this->validateNecessaryParameters($params, ['data' => self::OBJECT_TYPE]);
         $data = $params['data'];
 
-        // validate params
-        // ...
-
         // processing
-        $resultArray['data'] = $this->databaseBackupService->handlePutDatabaseBackup($data,  self::RETURN_FIELD);
+        $resultArray['data'] = $this->databaseBackupService->handlePutDatabaseBackup($data, self::RETURN_FIELD);
 
         $response->setContent(json_encode($resultArray));
         return $response;
     }
 
     /**
-     * @Route("/databaseBackup", name="备份数据库", methods={"DELETE"})
+     * @Route("/databaseBackup", name="删除数据库备份", methods={"DELETE"})
      * @throws \Exception
      */
     public function executeDelete(Request $request): Response
@@ -103,11 +106,29 @@ class DatabaseBackupController extends BaseController
         $this->validateNecessaryParameters($params, ['data' => self::OBJECT_TYPE]);
         $data = $params['data'];
 
-        // validate params
-        // ...
-
         // processing
         $resultArray['data'] = $this->databaseBackupService->handleDeleteDatabaseBackup($data, self::RETURN_FIELD);
+
+        $response->setContent(json_encode($resultArray));
+        return $response;
+    }
+
+    /**
+     * @Route("/databaseBackup/import", name="导入备份到数据库", methods={"POST"})
+     * @throws \Exception
+     */
+    public function executeImportDb(Request $request): Response
+    {
+        $response = new Response();
+
+        $params = json_decode($request->getContent(), true);
+        $this->validateNecessaryParameters($params, ['data' => self::OBJECT_TYPE]);
+        $data = $params['data'];
+
+        $this->validateNecessaryParameters($data, ['id' => self::INT_TYPE]);
+
+        // processing
+        $resultArray['data']['handle'] = $this->databaseBackupService->handleImportDb($data);
 
         $response->setContent(json_encode($resultArray));
         return $response;

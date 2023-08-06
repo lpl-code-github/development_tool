@@ -34,15 +34,25 @@ class DatabaseBackupService
      * @param array $returnFields
      * @return array
      */
-    public function handleGetDatabaseBackup(array $returnFields): array
+    public function handleGetDatabaseBackup(array $params,array $returnFields): array
     {
         $result = array();
 
-        $databaseBackups = $this->entityManager->getRepository(DatabaseBackup::class)->findAllOrderByCreatedAt();
-        foreach ($databaseBackups as $databaseBackup) {
-            $databaseBackupDto = new DatabaseBackupDto($databaseBackup);
-            $result[] = $databaseBackupDto->toArray($returnFields);
+        if (count($params) == 0){
+            $databaseBackups = $this->entityManager->getRepository(DatabaseBackup::class)->findAllOrderByCreatedAt();
+            foreach ($databaseBackups as $databaseBackup) {
+                $databaseBackupDto = new DatabaseBackupDto($databaseBackup);
+                $result[] = $databaseBackupDto->toArray($returnFields);
+            }
         }
+        if (array_key_exists('key',$params)){
+            $databaseBackups = $this->entityManager->getRepository(DatabaseBackup::class)->findLikeNameOrDesc($params['key']);
+            foreach ($databaseBackups as $databaseBackup) {
+                $databaseBackupDto = new DatabaseBackupDto($databaseBackup);
+                $result[] = $databaseBackupDto->toArray($returnFields);
+            }
+        }
+
 
         return $result;
     }
@@ -61,14 +71,20 @@ class DatabaseBackupService
         $desc = $data["desc"] ?? null;
         $db = $data["db"] ?? null;
 
-        $mysqlDumpPath = $this->mysqlDump($db);
-        if ($mysqlDumpPath == "") {
+        list($dbHost, $dbUser, $dbPwd) = $this->getDBInfo();
+        $currentDateTime = new DateTime();
+        $currentDateTime->modify('+8 hours');
+        $formattedDateTime = $currentDateTime->format('YmdHis');
+
+        $exportPath = BASE_PATH . $this->parameterBag->get("backup_db_sql_path") . $formattedDateTime . ".sql";
+        $mysqlDump = $this->mysqlDump($dbHost, $dbUser, $dbPwd, $db,$exportPath);
+        if (!$mysqlDump) {
             throw ExceptionFactory::InternalServerException("备份数据库出错");
         }
 
         try {
             $databaseBackup = $this->databaseBackupFactory->create(
-                $name, $desc, $db, $mysqlDumpPath
+                $name, $desc, $db, $exportPath
             );
             $this->entityManager->persist($databaseBackup);
             $this->entityManager->flush();
@@ -76,7 +92,7 @@ class DatabaseBackupService
             $result[] = $databaseBackupDto->toArray($returnFields);
         } catch (\Exception $exception) {
             $filesystem = new Filesystem();
-            $filesystem->remove($mysqlDumpPath);
+            $filesystem->remove($exportPath);
         }
 
         return $result;
@@ -91,10 +107,12 @@ class DatabaseBackupService
     {
         $databaseBackup = $this->entityManager->getRepository(DatabaseBackup::class)->findOneById($params['id']);
 
-        // example
-        //if (array_key_exists('name', $params)) {
-        //    $test->setName($params["name"]);
-        //}
+        if (array_key_exists('name', $params)) {
+            $databaseBackup->setName($params["name"]);
+        }
+        if (array_key_exists('description', $params)) {
+            $databaseBackup->setDescription($params["description"]);
+        }
 
         $this->entityManager->persist($databaseBackup);
         $this->entityManager->flush();
@@ -109,6 +127,7 @@ class DatabaseBackupService
      * @param array $params
      * @param array $returnFields
      * @return array
+     * @throws \Exception
      */
     public function handleDeleteDatabaseBackup(array $params, array $returnFields): array
     {
@@ -134,18 +153,149 @@ class DatabaseBackupService
      * @param DatabaseBackup $databaseBackup
      * @param array $returnFields
      * @return array
+     * @throws \Exception
      */
     private function deleteDatabaseBackup(DatabaseBackup $databaseBackup, array $returnFields): array
     {
-        $databaseBackup->setActive(0);
-        $this->entityManager->persist($databaseBackup);
-        $this->entityManager->flush();
+        $this->entityManager->beginTransaction();
+        try {
+            $filesystem = new Filesystem();
+            $path = $databaseBackup->getPath();
 
-        $databaseBackupDto = new DatabaseBackupDto($databaseBackup);
-        return $databaseBackupDto->toArray($returnFields);
+            $databaseBackupDto = new DatabaseBackupDto($databaseBackup);
+            $this->entityManager->getRepository(DatabaseBackup::class)->remove($databaseBackup, true);
+
+            $filesystem->remove($path);
+            $this->entityManager->commit();
+            return $databaseBackupDto->toArray($returnFields);
+        }catch (\Exception $exception){
+            $this->entityManager->rollback();
+            throw ExceptionFactory::InternalServerException("删除失败：".$exception->getMessage());
+        }
     }
 
-    private function mysqlDump($dbName): string
+    /**
+     * 导入备份文件
+     * @throws \Exception
+     */
+    public function handleImportDb($data): bool
+    {
+        // 获取数据库信息
+        list($dbHost, $dbUser, $dbPwd) = $this->getDBInfo();
+
+        // 获取备份文件信息
+        $databaseBackup = $this->entityManager->getRepository(DatabaseBackup::class)->findOneById($data['id']);
+        $path = $databaseBackup->getPath(); // 备份文件
+        $dbName = $databaseBackup->getDbName();
+
+        // 判断备份文件是否存在
+        $filesystem = new Filesystem();
+        if (!$filesystem->exists($path)){
+            throw ExceptionFactory::InternalServerException("备份文件可能已经丢失");
+        }
+
+        // 操作之前先临时备份数据库
+        $currentDateTime = new DateTime();
+        $currentDateTime->modify('+8 hours');
+        $formattedDateTime = $currentDateTime->format('YmdHis');
+        $exportPath = BASE_PATH . $this->parameterBag->get("tmp_backup_db_sql_path") . $formattedDateTime . ".sql"; // 临时备份文件
+        $mysqlDump = $this->mysqlDump($dbHost, $dbUser, $dbPwd, $dbName, $exportPath);
+        if (!$mysqlDump) {
+            throw ExceptionFactory::InternalServerException("操作前需要临时备份数据库，但是出错了");
+        }
+
+        //删除数据库
+        $deleteDb = $this->deleteDb($dbHost, $dbUser, $dbPwd, $dbName);
+        if (!$deleteDb){
+            throw ExceptionFactory::InternalServerException("删除数据库".$dbName."失败，"."当前数据库如果已经损坏，已经保留本操作前的SQL: ".$exportPath);
+        }
+
+        // 创建数据库
+        $createDb = $this->createDb($dbHost, $dbUser, $dbPwd, $dbName);
+        if (!$createDb){
+            throw ExceptionFactory::InternalServerException("创建数据库".$dbName."失败，"."当前数据库如果已经损坏，已经保留本操作前的SQL: ".$exportPath);
+        }
+
+        // 导入数据
+        $importDb = $this->importDb($dbHost, $dbUser, $dbPwd, $dbName, $path);
+        if (!$importDb){
+            throw ExceptionFactory::InternalServerException("导入数据库".$dbName."失败，"."当前数据库如果已经损坏，已经保留本操作前的SQL: ".$exportPath);
+        }
+
+        // 删除临时文件
+        if ($filesystem->exists($exportPath)){
+            $filesystem->remove($exportPath);
+        }
+        return true;
+    }
+
+    /**
+     * 备份数据库
+     * @param $dbHost
+     * @param $dbUser
+     * @param $dbPwd
+     * @param $dbName
+     * @param $exportPath
+     * @return bool
+     */
+    private function mysqlDump($dbHost, $dbUser, $dbPwd, $dbName, $exportPath): bool
+    {
+        $command = "mysqldump -h " . $dbHost . " -u" . $dbUser . " -p" . $dbPwd . " " . $dbName . " > " . $exportPath;
+        $process = Process::fromShellCommandline($command);
+        $process->run();
+        return $process->isSuccessful();
+    }
+
+    /**
+     * @param string $dbHost
+     * @param string $dbUser
+     * @param string $dbPwd
+     * @param $dbName
+     * @return bool
+     */
+    private function deleteDb(string $dbHost, string $dbUser, string $dbPwd, $dbName): bool
+    {
+        $command = "mysql -h " . $dbHost . " -u " . $dbUser . " -p" . $dbPwd . " -e 'DROP DATABASE IF EXISTS " . $dbName."'";
+        $process = Process::fromShellCommandline($command);
+        $process->run();
+        return $process->isSuccessful();
+    }
+
+    /**
+     * @param string $dbHost
+     * @param string $dbUser
+     * @param string $dbPwd
+     * @param $dbName
+     * @return bool
+     */
+    private function createDb(string $dbHost, string $dbUser, string $dbPwd, $dbName): bool
+    {
+        $command = "mysql -h " . $dbHost . " -u " . $dbUser . " -p" . $dbPwd . " -e 'CREATE DATABASE " . $dbName . " CHARACTER SET latin1 COLLATE latin1_swedish_ci'";
+        $process = Process::fromShellCommandline($command);
+        $process->run();
+        return  $process->isSuccessful();
+    }
+
+    /**
+     * @param string $dbHost
+     * @param string $dbUser
+     * @param string $dbPwd
+     * @param $dbName
+     * @param $path
+     * @return bool
+     */
+    private function importDb(string $dbHost, string $dbUser, string $dbPwd, $dbName, $path): bool
+    {
+        $command = "mysql -h " . $dbHost . " -u " . $dbUser . " -p" . $dbPwd . " " . $dbName . " < " . $path;
+        $process = Process::fromShellCommandline($command);
+        $process->run();
+        return $process->isSuccessful();
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getDBInfo(): array
     {
         $envFile = $this->parameterBag->get("riskid_env_path");
         $dbHost = "";
@@ -163,15 +313,9 @@ class DatabaseBackupService
                 $dbPwd = substr($line, strlen('DB_PWD='));
             }
         }
-        $currentDateTime = new DateTime();
-        $currentDateTime->modify('+8 hours');
-        $formattedDateTime = $currentDateTime->format('YmdHis');
-
-        $exportPath = BASE_PATH . $this->parameterBag->get("backup_db_sql_path") . $formattedDateTime . ".sql";
-
-        $command = "mysqldump -h " . $dbHost . " -u" . $dbUser . " -p" . $dbPwd . " " . $dbName . " > " . $exportPath;
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-        return $process->isSuccessful() ? $exportPath : "";
+        return array($dbHost, $dbUser, $dbPwd);
     }
+
+
+
 }

@@ -30,7 +30,8 @@ class OperationLogService
             "id" => "3",
             "name" => "数据库/测试",
             "route" => [
-                "/resource/databaseBackup"
+                "/resource/databaseBackup",
+                "/resource/databaseBackup/import"
             ]
         ]
     ];

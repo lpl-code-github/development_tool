@@ -47,13 +47,34 @@ class DatabaseBackupRepository extends ServiceEntityRepository
         }
     }
 
-    public function findAllOrderByCreatedAt(){
+    public function findOneById($value)
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.id = :id')
+            ->setParameter('id', $value)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findAllOrderByCreatedAt()
+    {
         return $this->createQueryBuilder('d')
             ->orderBy('d.created_at', 'DESC')
             ->getQuery()
             ->getResult();
     }
 
+    public function findLikeNameOrDesc($keyword)
+    {
+        $queryBuilder = $this->createQueryBuilder('d');
+        return $queryBuilder
+            ->where($queryBuilder->expr()->like('d.name', ':keyword'))
+            ->orWhere($queryBuilder->expr()->like('d.description', ':keyword'))
+            ->setParameter('keyword', '%' . $keyword . '%')
+            ->orderBy('d.created_at', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     // /**
     //  * @return DatabaseBackup[] Returns an array of DatabaseBackup objects
     //  */
