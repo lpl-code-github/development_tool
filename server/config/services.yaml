@@ -17,6 +17,7 @@ parameters:
   risk_id_controller_path: '/var/app/r1/src/Controller/'
   default_slate_doc_path: '/resource/doc/default_slate_doc.md'
   backup_db_sql_path: '/resource/backup_db_sql/'
+  tmp_backup_db_sql_path: '/resource/tmp_backup_db_sql_path/'
 
 
 
