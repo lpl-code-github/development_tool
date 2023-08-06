@@ -2,6 +2,7 @@
   <div>
     <AddBackUp
         @updateModelStatus="getModelStatus"
+        @submit="updateTable"
         :open-flag="openAddScriptModel"
         :db-list="dbList"
     >
@@ -15,6 +16,7 @@
 
     <div class="my-s-table">
       <a-table
+          :key = "componentKey"
           :columns="columns"
           :data-source="tableData"
           style="height: 40vh"
@@ -37,7 +39,7 @@
                 @change="e => handleChangeEdit(e.target.value, record.key, col)"
             />
             <template v-else>
-              {{ text }}
+              {{ text === "" || text === null ? "/" : text}}
             </template>
           </div>
         </template>
@@ -85,7 +87,8 @@ export default {
         {
           title: '数据库', width: 200, dataIndex: 'db_name',
           key: 'db_name',
-          filters: []
+          filters: [],
+          filteredValue:[]
         },
         {
           title: '创建时间', width: 150, dataIndex: 'created_at',
@@ -102,6 +105,7 @@ export default {
       tableData: [],
       cacheData: [],
       editingKey: '',
+      componentKey:0,
     }
   },
   created() {
@@ -110,7 +114,6 @@ export default {
 
   methods: {
     handleChange(pagination, filters) {
-      console.log(filters)
       var tagFilterChecked = filters.db_name
       if (filters.db_name !== undefined && filters.db_name.length === 0) {
         this.tableData = this.backupList
@@ -120,7 +123,15 @@ export default {
         this.tableData = this.backupList.filter(item => {
           return tagFilterChecked.includes(item.db_name);
         })
+        var columns = this.columns;
+        columns.forEach(item => {
+          if (item.key === 'db_name') {
+            this.$set(item, 'filteredValue', tagFilterChecked)
+          }
+        })
+        this.$set(this, 'columns', [...columns]);
       }
+      console.log(this.columns)
     },
     async backUp() {
       await this.getDatabaseList();
@@ -165,7 +176,34 @@ export default {
     getModelStatus(status) {
       this.openAddScriptModel = status
     },
+    updateTable(object) {
+      if (object !== null) {
+        var newData = object[0];
+        newData.key = newData.id;
 
+        // 在backupList头部添加元素
+        this.backupList.unshift(newData);
+        this.$set(this, 'backupList', [...this.backupList]);
+
+        // 添加过滤器 如果存在就不添加
+        var columns = this.columns;
+        columns.forEach(item => {
+          if (item.key === 'db_name') {
+            var filters = [...item.filters]; // 创建 filters 的副本
+            const existingTag = filters.find(filter => filter.text === newData.db_name);
+            if (!existingTag) {
+              filters.push({ text: newData.db_name, value: newData.db_name });
+            }
+            item.filters = filters;
+          }
+        });
+        this.$set(this, 'columns', [...columns]);
+
+        // 更新tableData
+        this.tableData = [...this.backupList];
+        this.cacheData = this.tableData.map(item => ({ ...item })); // 更新 cacheData
+      }
+    },
     async getDatabaseList() {
       await this.$request.getDatabaseList().then(res => {
         if (res.status === 200) {
@@ -261,7 +299,7 @@ export default {
       })
     },
     deleteDatabaseBackup(key){
-      const newData = [...this.tableData]
+      console.log(this.columns)
       var target = this.cacheData.find(item => key === item.key);
       var param = {
         data:{
@@ -270,8 +308,33 @@ export default {
       }
       this.$request.deleteDatabaseBackup(param).then(res=>{
         if (res.status === 200){
-          this.tableData = newData.filter(item => item.key !== key);
+          // 删除backupList，重新设置tableData
+          const newBackupList = [...this.backupList]
+          this.backupList = newBackupList.filter(item => item.key !== key);
+          this.tableData = [...this.backupList]
+
           this.$message.success("删除成功")
+
+          // 重新分配筛选器
+          const dbFilters = [];
+          this.backupList.forEach(item => {
+            const existingTag = dbFilters.find(filter => filter.text === item.db_name);
+            if (!existingTag) {
+              dbFilters.push({text: item.db_name, value: item.db_name});
+            }
+            item.key = item.id
+          })
+          var columns = this.columns;
+          columns.forEach(item => {
+            if (item.key === 'db_name') {
+              item.filters = [...dbFilters]
+              this.$set(item, 'filteredValue', [])
+            }
+          })
+          this.$set(this, 'columns', [...columns]);
+
+          // 重新分配cacheData
+          this.cacheData = this.tableData.map(item => ({...item}));
         }else {
           this.$message.error("删除失败")
         }

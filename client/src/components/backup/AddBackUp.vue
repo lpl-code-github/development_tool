@@ -96,13 +96,17 @@ export default {
           var data = {
             data:this.form
           }
+          var message = this.$message
+          var loadingMessage = message.loading('正在备份数据库，该操作有点耗时，请等待....', 0)
           this.$request.postDatabaseBackup(data).then(res=>{
             if (res.status === 200){
-              this.$message.success("备份成功")
+              setTimeout(loadingMessage, 0);
+              message.success("备份成功")
+              this.$emit('submit', res.data.data)
+            }else {
+              setTimeout(loadingMessage, 0);
             }
           })
-
-
           this.initFormData()
           setTimeout(() => {
             this.$emit('updateModelStatus', false)
