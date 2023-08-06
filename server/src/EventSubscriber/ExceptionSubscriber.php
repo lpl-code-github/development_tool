@@ -35,7 +35,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-        if($this->environment !== 'dev'){
+        if($this->environment == 'dev'){
             $response = new Response();
 
             $code = ($exception->getCode() >= 100 && $exception->getCode() <= 800) ? $exception->getCode() : 500;
