@@ -7,7 +7,7 @@
     >
     </AddBackUp>
     <div class="my-b-button">
-      <a-input-search placeholder="输入备份文件或描述搜索" style="width: 200px" @search="onSearch"/>
+      <a-input-search placeholder="输入名称或描述搜索" style="width: 200px" @search="onSearch"/>
       <a-button type="primary" @click="backUp">
         一键备份
       </a-button>
@@ -22,14 +22,46 @@
           :scrollToFirstRowOnChange="true"
           @change="handleChange"
       >
-
-        <span slot="action" slot-scope="text, record">
-          <a style="color: #2c982c">导入</a>
-          <a-divider type="vertical" style="background-color: #a8a7a7!important;"/>
-          <a style="color: #f17878">删除</a>
+        <template
+            v-for="col in ['name','description']"
+            :slot="col"
+            slot-scope="text, record, index"
+        >
+          <div :key="col">
+            <a-input
+                :type="col=== 'description'?'textarea':''"
+                rows="1"
+                v-if="record.editable"
+                style="margin: -5px 0"
+                :value="text"
+                @change="e => handleChangeEdit(e.target.value, record.key, col)"
+            />
+            <template v-else>
+              {{ text }}
+            </template>
+          </div>
+        </template>
+        <template slot="action" slot-scope="text, record, index">
+          <div class="editable-row-operations">
+              <span v-if="record.editable">
+                <a style="color: #5f92ef" @click="() => save(record.key)">更新</a>
+                <a-divider type="vertical" style="background-color: #a8a7a7!important;"/>
+                <a-popconfirm title="确定取消吗？" @confirm="() => cancel(record.key)">
+                  <a style="color: #5f6062">取消</a>
+                </a-popconfirm>
+              </span>
+            <span v-else>
+          <a style="color: #5f92ef" :disabled="editingKey !== ''" @click="() => edit(record.key)">编辑</a>
+              <a-divider type="vertical" style="background-color: #a8a7a7!important;"/>
+          <a style="color: #16750c" :disabled="editingKey !== ''" @click="() => importDb(record.key)">导入</a>
+              <a-divider type="vertical" style="background-color: #a8a7a7!important;"/>
+          <a style="color: #e01735" :disabled="editingKey !== ''" @click="() => deleteDatabaseBackup(record.key)">删除</a>
         </span>
+          </div>
+        </template>
+
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
-          {{ record.description ? record.description : "无描述" }}
+          文件路径：&nbsp;{{ record.path }}
         </p>
       </a-table>
     </div>
@@ -38,6 +70,7 @@
 
 <script>
 import AddBackUp from "@/components/backup/AddBackUp";
+
 export default {
   name: "Backup",
   components: {AddBackUp},
@@ -45,26 +78,30 @@ export default {
     return {
       openAddScriptModel: false,
       dbList: [],
-      getDatabaseListFlag : false,
+      getDatabaseListFlag: false,
       columns: [
-        {title: '名称',width: 200, dataIndex: 'name', key: 'name'},
-        {title: '路径', width: 350,dataIndex: 'path', key: 'path'},
-        {title: '数据库',width: 200, dataIndex: 'db_name',
+        {title: '名称', width: 200, dataIndex: 'name', scopedSlots: {customRender: 'name'}},
+        {title: '描述', width: 350, dataIndex: 'description', scopedSlots: {customRender: 'description'}},
+        {
+          title: '数据库', width: 200, dataIndex: 'db_name',
           key: 'db_name',
           filters: []
         },
-        {title: '创建时间',width: 150, dataIndex: 'created_at',
+        {
+          title: '创建时间', width: 150, dataIndex: 'created_at',
           key: 'created_at',
           sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
         },
         {title: 'Action', dataIndex: '', key: 'x', scopedSlots: {customRender: 'action'}},
       ],
-      backupList:[],
-      paginationConfig:{
-        defaultCurrent:1,
-        defaultPageSize:5,
+      backupList: [],
+      paginationConfig: {
+        defaultCurrent: 1,
+        defaultPageSize: 5,
       },
-      tableData:[]
+      tableData: [],
+      cacheData: [],
+      editingKey: '',
     }
   },
   created() {
@@ -79,37 +116,41 @@ export default {
         this.tableData = this.backupList
         return
       }
-      if (tagFilterChecked !== undefined){
+      if (tagFilterChecked !== undefined) {
         this.tableData = this.backupList.filter(item => {
           return tagFilterChecked.includes(item.db_name);
         })
       }
-
     },
-     async backUp() {
-       await this.getDatabaseList();
+    async backUp() {
+      await this.getDatabaseList();
 
-       if (this.getDatabaseListFlag) {
-         this.openAddScriptModel = true
-       } else {
-         this.$message.error("获取数据库列表失败")
-       }
-     },
-    onSearch() {
-
+      if (this.getDatabaseListFlag) {
+        this.openAddScriptModel = true
+      } else {
+        this.$message.error("获取数据库列表失败")
+      }
     },
-    getBackupList(){
-      this.$request.getDatabaseBackup().then(res=>{
-        if (res.status === 200){
+    onSearch(value) {
+      var params = "?key=" + value
+      this.getBackupList(params)
+    },
+    getBackupList(params) {
+      if (params == null) {
+        params = ""
+      }
+      this.$request.getDatabaseBackup(params).then(res => {
+        if (res.status === 200) {
           this.backupList = res.data.data
 
           const dbFilters = [];
 
           this.backupList.forEach(item => {
-              const existingTag = dbFilters.find(filter => filter.text === item.db_name);
-              if (!existingTag) {
-                dbFilters.push({text: item.db_name, value: item.db_name});
-              }
+            const existingTag = dbFilters.find(filter => filter.text === item.db_name);
+            if (!existingTag) {
+              dbFilters.push({text: item.db_name, value: item.db_name});
+            }
+            item.key = item.id
           })
           this.columns.forEach(item => {
             if (item.key === 'db_name') {
@@ -117,6 +158,7 @@ export default {
             }
           })
           this.tableData = this.backupList
+          this.cacheData = this.tableData.map(item => ({...item}));
         }
       })
     },
@@ -133,7 +175,107 @@ export default {
           this.getDatabaseListFlag = false
         }
       })
+    },
 
+    // table编辑
+    handleChangeEdit(value, key, column) {
+      const newData = [...this.tableData];
+      const target = newData.find(item => key === item.key);
+
+      if (target) {
+        target[column] = value;
+        this.tableData = newData;
+      }
+    },
+    edit(key) {
+      const newData = [...this.tableData];
+      const target = newData.find(item => key === item.key);
+      this.editingKey = key;
+      if (target) {
+        target.editable = true;
+        this.tableData = newData;
+      }
+    },
+    save(key) {
+      const newData = [...this.tableData];
+      const newCacheData = [...this.cacheData];
+      const target = newData.find(item => key === item.key);
+      const targetCache = newCacheData.find(item => key === item.key);
+      if (target && targetCache) {
+        // 校验
+
+        let nameLength = target.name.length;
+        let descriptionLength = target.description.length;
+
+        if (!(nameLength >= 5 && length <= 50)) {
+          this.$message.warning("名称长度应该在5～50之间")
+          return
+        }
+        if (descriptionLength === 0) {
+          this.$message.warning("描述不能为空")
+          return
+        }
+        var param = {
+          data: target
+        }
+        this.$request.putDatabaseBackup(param).then(res => {
+          if (res.status === 200) {
+            delete target.editable;
+            this.tableData = newData;
+            Object.assign(targetCache, target);
+            this.cacheData = newCacheData;
+            this.$message.success("更新成功")
+          } else {
+            this.$message.error("更新失败")
+          }
+        })
+      }
+      this.editingKey = '';
+    },
+    cancel(key) {
+      const newData = [...this.tableData];
+      const target = newData.find(item => key === item.key);
+      this.editingKey = '';
+      if (target) {
+        Object.assign(target, this.cacheData.find(item => key === item.key));
+        delete target.editable;
+        this.tableData = newData;
+      }
+    },
+    importDb(key){
+      var message = this.$message
+      var target = this.cacheData.find(item => key === item.key);
+      var param = {
+        data:{
+          id:target.id
+        }
+      }
+      var loadingMessage = message.loading('正在导入数据库，该操作有点耗时，请等待....', 0)
+      this.$request.importDatabaseBackup(param).then(res=>{
+        if (res.status === 200){
+          message.success("导入成功")
+          setTimeout(loadingMessage, 0);
+        }else {
+          setTimeout(loadingMessage, 0);
+        }
+      })
+    },
+    deleteDatabaseBackup(key){
+      const newData = [...this.tableData]
+      var target = this.cacheData.find(item => key === item.key);
+      var param = {
+        data:{
+          id:target.id
+        }
+      }
+      this.$request.deleteDatabaseBackup(param).then(res=>{
+        if (res.status === 200){
+          this.tableData = newData.filter(item => item.key !== key);
+          this.$message.success("删除成功")
+        }else {
+          this.$message.error("删除失败")
+        }
+      })
     }
   }
 }
@@ -145,6 +287,7 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+
 .my-s-table {
   margin-top: 10px;
 }

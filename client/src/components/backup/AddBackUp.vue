@@ -97,7 +97,9 @@ export default {
             data:this.form
           }
           this.$request.postDatabaseBackup(data).then(res=>{
-            console.log(res)
+            if (res.status === 200){
+              this.$message.success("备份成功")
+            }
           })
 
 

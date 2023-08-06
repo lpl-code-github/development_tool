@@ -109,11 +109,40 @@ export const postDatabaseBackup = (param) => {
         .then(res=> res)
 }
 
-export const getDatabaseBackup = () => {
+export const getDatabaseBackup = (params) => {
+    return service
+        .request({
+            url: '/resource/databaseBackup'+params,
+            method: 'get',
+        })
+        .then(res=> res)
+}
+
+export const putDatabaseBackup = (param) => {
     return service
         .request({
             url: '/resource/databaseBackup',
-            method: 'get',
+            method: 'put',
+            data:param
+        })
+        .then(res=> res)
+}
+
+export const deleteDatabaseBackup = (param) => {
+    return service
+        .request({
+            url: '/resource/databaseBackup',
+            method: 'delete',
+            data:param
+        })
+        .then(res=> res)
+}
+export const importDatabaseBackup = (param) => {
+    return service
+        .request({
+            url: '/resource/databaseBackup/import',
+            method: 'post',
+            data:param
         })
         .then(res=> res)
 }
