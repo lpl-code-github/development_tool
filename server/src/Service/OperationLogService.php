@@ -31,7 +31,9 @@ class OperationLogService
             "name" => "数据库/测试",
             "route" => [
                 "/resource/databaseBackup",
-                "/resource/databaseBackup/import"
+                "/resource/databaseBackup/import",
+                "/resource/newman_tasks",
+                "/functional/runNewman"
             ]
         ]
     ];
