@@ -47,7 +47,10 @@ class LogSubscriber implements EventSubscriberInterface
             $uri = $request->getRequestUri();
         }
         // Only process POST, DELETE, PUT, PATCH requests
-        if (in_array($method, ['POST', 'DELETE', 'PUT', 'PATCH']) && !in_array($uri, self::FILTER_ARRAY)) {
+        if (in_array($method, ['POST', 'DELETE', 'PUT', 'PATCH'])
+            && !in_array($uri, self::FILTER_ARRAY) // 生成postman不需要记录日志
+            &&  !($method =="PUT" && $uri == "/resource/newman_tasks") // 更新task信息不需要记录日志
+        ) {
             // 创建日志
             $operationLog = $this->operationLogFactory->create($request, $response, $this->errorMessage);
             // 保存日志
