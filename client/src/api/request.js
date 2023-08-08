@@ -146,3 +146,42 @@ export const importDatabaseBackup = (param) => {
         })
         .then(res=> res)
 }
+
+export const postNewmanTasks = (param) => {
+    return service
+        .request({
+            url: '/resource/newman_tasks',
+            method: 'post',
+            data:param
+        })
+        .then(res=> res)
+}
+
+export const getNewmanTasks = (param) => {
+    return service
+        .request({
+            url: '/resource/newman_tasks'+param,
+            method: 'get'
+        })
+        .then(res=> res)
+}
+
+export const putNewmanTasksLog = (param) => {
+    return service
+        .request({
+            url: '/resource/newman_tasks',
+            method: 'put',
+            data: param
+        })
+        .then(res=> res)
+}
+
+export const runNewman = (param) => {
+    return service
+        .request({
+            url: '/functional/runNewman',
+            method: 'post',
+            data: param
+        })
+        .then(res=> res)
+}
