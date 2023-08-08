@@ -31,6 +31,7 @@ class NewmanTasksController extends BaseController
     /**
      * @Route("/newman_tasks", name="get newmanTasks", methods={"GET"})
      * @throws \Exception
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function executeGet(Request $request): Response
     {
