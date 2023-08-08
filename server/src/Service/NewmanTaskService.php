@@ -69,7 +69,7 @@ class NewmanTaskService
                                         // 读取文件内容
                                         $firstLine = fgets(fopen($cliOutputPath, 'r'));
                                         if (!empty($firstLine) && $firstLine!='') {// 文件内容不为空
-                                            $flag = (strpos($firstLine, 'newman') !== false && strpos($firstLine, 'error') == false);
+                                            $flag = (strpos($firstLine, 'newman') !== false && strpos($firstLine, 'error') == false && strpos($firstLine, 'failed') == false);
                                             $newmanTaskStatus = $flag ? "success":'error';
                                             $newmanRunStatus = $flag ?"success":'error';
                                             break; // 退出循环
