@@ -30,7 +30,8 @@ class OperationLogRepository extends ServiceEntityRepository
             switch ($key){
                 case "created_at":
                     $query->andWhere($qb->expr()->eq('DATE(ol.created_at)', ':created_at'))
-                        ->setParameter('created_at', $value);
+                        ->setParameter('created_at', $value)
+                        ->orderBy('ol.created_at', 'ASC');
                     break;
                 case "start":
                     $query->andWhere($qb->expr()->gte('DATE(ol.created_at)', ':start'))
