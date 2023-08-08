@@ -147,8 +147,8 @@ EOF;
 
         // validate params
         // example ...
-        //\$this->validateNecessaryParameters(\$params, [
-        //    \$params['name'] => self::STRING_TYPE
+        //\$this->validateNecessaryParameters(\$data, [
+        //    'name' => self::STRING_TYPE
         //]);
 
         // processing
