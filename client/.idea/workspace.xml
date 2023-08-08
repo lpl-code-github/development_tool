@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0222d096-929b-40cb-a84f-6bd3d4e76e5b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/DatabaseBackupService.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Service/DatabaseBackupService.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/RiskidService.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Service/RiskidService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/config/services.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/config/services.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Resource/NewmanTasksController.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Controller/Resource/NewmanTasksController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateControllerCodeService.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateControllerCodeService.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +46,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/assets" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/components/Newman" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -56,10 +57,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/components/Newman" />
+      <recent name="$PROJECT_DIR$/src/components" />
       <recent name="$PROJECT_DIR$/src/assets" />
       <recent name="$PROJECT_DIR$/src/components/backup" />
       <recent name="$PROJECT_DIR$/src/components/switch" />
-      <recent name="$PROJECT_DIR$/src/components" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/components/Script" />
@@ -106,7 +108,7 @@
       <workItem from="1690545250194" duration="1452000" />
       <workItem from="1690546707483" duration="11018000" />
       <workItem from="1690567064128" duration="8075000" />
-      <workItem from="1690575964531" duration="122443000" />
+      <workItem from="1690575964531" duration="145733000" />
     </task>
     <servers />
   </component>
