@@ -59,7 +59,7 @@ class NewmanService
             $cliOutputPath = $newmanCliOutputPath . $formattedDateTime . ".txt";
 
             $command = "nohup newman run '"
-                . $postmanCollectionUrl.'3423453'
+                . $postmanCollectionUrl
                 . "' -e '"
                 . $tmpEnvFilePath
                 . "' -r cli,htmlextra,csv "
