@@ -22,6 +22,7 @@ class DBService
     }
 
     /**
+     * 获取当前RiskId系统中，所使用的数据库信息
      * @return string[]
      */
     public function getDBInfo(): array
@@ -111,6 +112,7 @@ class DBService
 
     /**
      * 获取数据库服务器所有的数据库列表
+     * 去掉一些系统级别的数据库
      * @return array
      * @throws \Exception
      */
