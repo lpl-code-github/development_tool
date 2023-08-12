@@ -32,7 +32,7 @@
 
     </a-layout-header>
 
-    <Statistics @updateDrawerStatus="getDrawerStatus" :open-flag="openDrawer"></Statistics>
+    <Statistics :system-status="systemStatus" :top5ps="psInfo" @updateDrawerStatus="getDrawerStatus" :open-flag="openDrawer"></Statistics>
   </div>
 </template>
 
@@ -78,20 +78,45 @@ export default {
           type: "back_api",
           checked: false
         }
-      ]
+      ],
+      systemStatus:{
+        "cpu_usage":0,
+        "memory_usage":0
+      },
+      psInfo:"",
+      timer: null,
+    }
+  },
+  watch:{
+    openDrawer:{
+      handler: function (newVal, oldVal) {
+        if (oldVal === true && newVal === false){// 关闭Drawer
+          if (this.timer) { //如果定时器还在运行
+            clearInterval(this.timer); //关闭
+          }
+        }else { // 打开Drawer
+          // 轮询请求
+          this.timer = setInterval(this.handleGetDockerInfo, 2000); //2秒去获取一次容器信息
+        }
+      },
+      // 深度观察监听
+      deep: true
     }
   },
   mounted() {
     document.addEventListener('click', this.handleOutsideClick);
   },
   beforeDestroy() {
+    if (this.timer) { //如果定时器还在运行
+      clearInterval(this.timer); //关闭
+    }
     document.removeEventListener('click', this.handleOutsideClick);
   },
   methods: {
     /*
       一些请求事件
      */
-    // 开关打开与关闭
+    // 初始化switch开关的状态
     async handleQuickSwitch() {
       await this.$request.switchStatus().then(res => {
         if (res.status !== 200) {
@@ -107,7 +132,6 @@ export default {
             }
           });
           this.switchComponentData = temp
-          console.log(this.switchComponentData)
         }
       })
     },
@@ -130,10 +154,31 @@ export default {
         this.$bus.$emit('requestCompleted');
       })
     },
+    // 获取容器信息
+    handleGetDockerInfo(){
+      this.$request.getDockerSystemStatus().then(res=>{
+        if (res.status !== 200) {
+          this.$message.error("获取容器硬件信息失败");
+          this.openDrawer = false
+        }else {
+          this.systemStatus = res.data
+
+          this.$request.getPs().then(res =>{
+            if (res.status !== 200) {
+              this.$message.error("获取容器硬件信息失败");
+              this.openDrawer = false
+            }else {
+              this.psInfo = res.data
+              this.openDrawer = true
+            }
+          })
+        }
+      })
+    },
 
     // 打开抽屉
     handleOpenDrawer(){
-      this.openDrawer = true
+      this.handleGetDockerInfo()
     },
     // 获取抽屉状态
     getDrawerStatus(status){
