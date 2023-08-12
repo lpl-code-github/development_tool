@@ -53,7 +53,7 @@ class NewmanTask
     private $active;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $log;
 

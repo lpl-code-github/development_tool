@@ -197,7 +197,7 @@ class NewmanTaskDto
             $resultArray["excel_report_path"] = $this->getExcelReportPath();
         }
         if (in_array("cli_output_path", $fields)) {
-            $resultArray["cli_output_path"] = $this->getExcelReportPath();
+            $resultArray["cli_output_path"] = $this->getCliOutputPath();
         }
         if (in_array("active", $fields)) {
             $resultArray["active"] = $this->getActive();
@@ -206,10 +206,10 @@ class NewmanTaskDto
             $resultArray["log"] = $this->getLog();
         }
         if (in_array("created_at", $fields)) {
-            $resultArray["created_at"] = $this->getCreatedAt();
+            $resultArray["created_at"] = $this->getCreatedAt()->format('Y-m-d H:i:s');
         }
         if (in_array("updated_at", $fields)) {
-            $resultArray["updated_at"] = $this->getUpdatedAt();
+            $resultArray["updated_at"] = $this->getUpdatedAt()->format('Y-m-d H:i:s');
         }
         return $resultArray;
     }
