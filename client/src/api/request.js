@@ -37,6 +37,26 @@ export const clearR1Cache = () => {
 /*
     r1概览的请求
  */
+// docker容器硬件信息
+export const getDockerSystemStatus = () => {
+    return service
+        .request({
+            url: '/functional/getSystemStatus',
+            method: 'get',
+        })
+        .then(res=> res)
+}
+// 获取容器top5的进程
+export const getPs = () => {
+    return service
+        .request({
+            url: '/functional/getPs',
+            method: 'get',
+        })
+        .then(res=> res)
+}
+
+// r1所有api信息
 export const getR1Api = () => {
     return service
         .request({
