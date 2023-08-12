@@ -13,6 +13,13 @@ use ReflectionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * 生成器的Service
+ *
+ *      对于生成Dto Factory Service Controller代码，
+ *      先从RiskId中把Entity复制到本项目的TempEntity中
+ *      然后获取一些变量等用于生成代码
+ */
 class GeneratorService
 {
     private GeneratePostmanTestService $generatePostmanTestService;

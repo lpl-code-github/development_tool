@@ -61,15 +61,15 @@ EOF;
         $getterGetCode = $this->generateGetCode($className);
         $controllerCode .= $getterGetCode;
         $controllerCode .= "\n\n";
-        // 生成get请求的方法
+        // 生成post请求的方法
         $getterPostCode = $this->generatePostCode($className);
         $controllerCode .= $getterPostCode;
         $controllerCode .= "\n\n";
-        // 生成get请求的方法
+        // 生成put请求的方法
         $getterPutCode = $this->generatePutCode($className);
         $controllerCode .= $getterPutCode;
         $controllerCode .= "\n\n";
-        // 生成get请求的方法
+        // 生成delete请求的方法
         $getterDeleteCode = $this->generateDeleteCode($className);
         $controllerCode .= $getterDeleteCode;
         $controllerCode .= "\n";
@@ -103,7 +103,7 @@ EOF;
 
         \$returnFields = \$request->query->get("return_fields") ?? [];
         \$id = \$request->query->get("id") ?? null;
-        \$ids = \$request->query->get("id") ?? null;
+        \$ids = \$request->query->get("ids") ?? null;
 
         // validate params
         // ...
@@ -156,7 +156,7 @@ EOF;
         //    \$data['name'],
         //    \$data['type'],
         );
-        // processing
+        
         \$resultArray['data'] = \$this->${classNameLower}Service->handlePost${classNameUpperComplex}(\$${classNameLower}, self::RETURN_FIELD);
 
         \$response->setContent(json_encode(\$resultArray));
