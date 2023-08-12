@@ -1,21 +1,22 @@
 // 引入axios
 import axios from 'axios'
-// 引入element的Message提示组件
-import router from '../router/index'
 
+// 顶部loading
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+
 //axios打开允许跨域携带cookie信息
 axios.defaults.withCredentials = true
+
+// ant design的notification组件
 import notification from 'ant-design-vue/lib/notification';
 // 引入封装好的接口模块
 import * as request from './request.js'
 
-
 // 请求超时时间
 axios.defaults.timeout = 100000
 
-// 代理接口
+// 代理接口 部署时应该换为后台实际地址
 const service = axios.create({
     baseURL: '/apis'
 })
@@ -44,16 +45,18 @@ service.interceptors.response.use(
     },
     error => {
         const { data } = error.response
+        // duration代表notification设置了不关闭，因为有些报错信息内容中可能存在需要复制的场景
         if (data.code ===404){
             notification.error({
                 message: '未找到',
+                description: error.response.data.message,
+                duration: null
             });
         }else {
-
             notification.error({
                 message: '错误的请求',
                 description: error.response.data.message,
-                duration:null
+                duration: null
             });
         }
 

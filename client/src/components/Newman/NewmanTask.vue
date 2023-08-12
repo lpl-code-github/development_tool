@@ -53,6 +53,7 @@ export default {
     };
   },
   computed: {
+    // 对taskLog数据中status属性判断，用于显示当前任务节点的icon颜色
     computedColor() {
       return function(item) {
         if (item.flag && item.status === "成功") {
@@ -68,7 +69,7 @@ export default {
   watch: {
     openFlag: {
       handler: function (newVal, oldVal) {
-        console.log(newVal)
+        // 父组件给的openFlag值发变化 拷贝一份
         this.visible = newVal
       },
       // 深度观察监听
@@ -76,11 +77,11 @@ export default {
     }
   },
   mounted() {
-    console.log(this.taskName)
     this.visible = this.openFlag
   },
   methods: {
     afterClose(e) {
+      // 向父组件发送updateModelStatus事件，表示modal关闭
       this.$emit('updateModelStatus', false)
     },
   }

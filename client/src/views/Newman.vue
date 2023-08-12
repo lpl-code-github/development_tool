@@ -4,6 +4,8 @@
                :open-flag="openRunNewmanModelFlag"></RunNewman>
     <NewmanTask :task-log="taskLog" :taskName="taskName" @updateModelStatus="getNewmanModelTaskStatus"
                 :open-flag="openNewmanTaskModelFlag"></NewmanTask>
+
+    <!--表格上方的搜索框 按钮等 -->
     <div class="my-n-button">
       <a-input-search placeholder="输入操作名称或描述搜索" style="width: 200px" @search="onSearch"/>
       <div>
@@ -16,11 +18,9 @@
             <a-icon v-if="taskCount !== 0" type="sync" spin/>
           </a-button>
         </a-badge>
-        <!--        <a-button @click="openNewmanLogModel" style="margin-right: 10px">-->
-        <!--          日志-->
-        <!--        </a-button>-->
       </div>
     </div>
+
     <div class="my-n-table">
       <a-table
           :columns="columns"
@@ -28,7 +28,6 @@
           @change="handleChange"
           :pagination="paginationConfig"
       >
-
         <template
             v-for="col in ['name','description']"
             :slot="col"
@@ -94,7 +93,7 @@ export default {
   components: {NewmanTask, RunNewman},
   data() {
     return {
-      taskCount: 0,
+      taskCount: 0, // 当前任务的数量，只能是0和1
       columns: [
         {title: '名称', width: 150, dataIndex: 'name', scopedSlots: {customRender: 'name'}},
         {title: '描述', width: 250, dataIndex: 'description', scopedSlots: {customRender: 'description'}},
@@ -108,23 +107,21 @@ export default {
           sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
         },
         {title: 'Action', width: 200, dataIndex: '', key: 'x', scopedSlots: {customRender: 'action'}},
-      ],
+      ], // 表格属性
       paginationConfig: {
         defaultCurrent: 1,
         defaultPageSize: 5,
-      },
-      newmanTaskList: [],
-      tableData: [],
-      cacheData: [],
-      filters: [],
-      filteredValue: [],
-      tagsFilterDropdownVisible: false,
-      openRunNewmanModelFlag: false,
-      openNewmanTaskModelFlag: false,
-      runTestFlag: false,
-      timer: null,
-      taskName: "",
-      // flag 代表任务打开与关闭
+      }, // table的分页
+      newmanTaskList: [], // 从后台拿来的数据
+      tableData: [], // table的数据
+      cacheData: [], // 当编辑table取消时，需要从这里获取原来的数据
+      filters: [], // 对status的filters，所有筛选选项
+      filteredValue: [],// // 对status的filters，被选中的选项
+      openRunNewmanModelFlag: false, // 显示RunNewman的Model开关
+      openNewmanTaskModelFlag: false,// 显示NewmanTask的Model开关
+      runTestFlag: false,// 是否开始执行newman的开关
+      taskName: "", // 当前正在进行的task name
+      // 这是任务初始化的log，由前台定义，TaskLog中 flag 代表任务打开与关闭
       tempTaskLog: [
         {
           name: "关闭测试环境的报错信息",
@@ -151,45 +148,37 @@ export default {
           index: 4
         }
       ],
-      taskLog: [],
-      currentTask: null,
-      editingKey: '',
+      taskLog: [],// 当前任务的taskLog
+      currentTask: null, // 当前任务的对象
+      editingKey: '', // table当前编辑选中行
     }
   },
   watch: {
     currentTask: {
       handler: function (newVal, oldVal) {
+        // 如果currentTask值变化 从不是null变为null 说明正在进行的任务已完成，刷新table
         if (oldVal !== null && newVal === null) {
           this.getAllTaskList();
         }
       },
-      // 深度观察监听
       deep: true
     }
   },
   created() {
     this.getUnfinishedNewmanTasks()
+    this.getAllTaskList();
   },
   mounted() {
     var currentTaskId = localStorage.getItem("run_postman_flag");
     if (currentTaskId == null) {
       localStorage.setItem('run_postman_flag', "0");
     }
-    this.getAllTaskList();
-    // if (this.timer == null) {
-    //   this.timer = setInterval(() => {
-    //     this.getUnfinishedNewmanTasks()
-    //   }, 3000);
-    // }
-  },
-  beforeDestroy() {
-    clearInterval(this.timer);
   },
   methods: {
-    onSearch(value) {
-      var params = "?key=" + value
-      this.getAllTaskList(params)
-    },
+    /*
+      对table的一些处理
+     */
+    // 表格变化的处理，这里主要对filters做处理
     handleChange(pagination, filters) {
       var tagFilterChecked = filters.status
       if (filters.status !== undefined && filters.status.length === 0) {
@@ -218,53 +207,6 @@ export default {
         this.$set(this, 'columns', [...columns]);
       }
     },
-
-    openRunNewmanModel() {
-      this.openRunNewmanModelFlag = true
-    },
-    openNewmanTaskModel() {
-      this.openNewmanTaskModelFlag = true
-    },
-    getRunNewmanModelStatus(status) {
-      this.openRunNewmanModelFlag = status
-    },
-    getNewmanModelTaskStatus(status) {
-      this.openNewmanTaskModelFlag = status
-    },
-    getRunTaskObj(taskObj) {
-      if (taskObj != null) {
-        this.runTestFlag = true
-      }
-    },
-
-    // 获取全部任务列表
-    getAllTaskList(params) {
-      if (params == null) {
-        params = ""
-      }
-      this.$request.getNewmanTasks(params).then(res => {
-        if (res.status === 200) {
-          this.newmanTaskList = res.data.data
-
-          const statusFilters = [];
-
-          this.newmanTaskList.forEach(item => {
-            const existingStatus = statusFilters.find(filter => filter.text === item.status);
-            if (!existingStatus) {
-              statusFilters.push({text: item.status, value: item.status});
-            }
-            item.key = item.id
-          })
-          this.columns.forEach(item => {
-            if (item.key === 'status') {
-              item.filters = statusFilters
-            }
-          })
-          this.tableData = this.newmanTaskList
-          this.cacheData = this.tableData.map(item => ({...item}));
-        }
-      })
-    },
     // table编辑
     handleChangeEdit(value, key, column) {
       const newData = [...this.tableData];
@@ -275,7 +217,7 @@ export default {
         this.tableData = newData;
       }
     },
-    // 编辑表格基本信息
+    // 编辑表格某一行数据
     edit(key) {
       const newData = [...this.tableData];
       const target = newData.find(item => key === item.key);
@@ -285,6 +227,7 @@ export default {
         this.tableData = newData;
       }
     },
+    // 保存一个更新
     save(key) {
       const newData = [...this.tableData];
       const newCacheData = [...this.cacheData];
@@ -323,6 +266,7 @@ export default {
       }
       this.editingKey = '';
     },
+    // 取消一个更新，从cacheData中恢复表格数据tableData
     cancel(key) {
       const newData = [...this.tableData];
       const target = newData.find(item => key === item.key);
@@ -333,6 +277,7 @@ export default {
         this.tableData = newData;
       }
     },
+    // 删除一个NewmanTask
     deleteNewmanTask(key) {
       this.$confirm({
         title: '确认删除测试记录吗?',
@@ -387,27 +332,43 @@ export default {
       });
 
     },
-    downloadFile(path) {
-      let fileName = path.substring(path.lastIndexOf('/') + 1);
-      this.$request.downloadFile(path).then(res => {
+
+    /*
+      一些请求事件
+     */
+    // 搜索组件，拼接模糊匹配的参数 请求查询接口
+    onSearch(value) {
+      var params = "?key=" + value
+      this.getAllTaskList(params)
+    },
+    // 获取全部任务列表
+    getAllTaskList(params) {
+      if (params == null) {
+        params = ""
+      }
+      this.$request.getNewmanTasks(params).then(res => {
         if (res.status === 200) {
-          fileDownload(res.data, fileName);
-        } else {
-          const hasHTML = fileName.includes("html");
-          const hasExcel = fileName.includes(".csv");
-          const hasTxt = fileName.includes(".txt");
-          console.log(hasExcel)
-          if (hasHTML || hasExcel) {
-            this.$message.error("文件可能丢失，也可能不存在，详情请下载cli报告看")
-          }
-          if (hasTxt){
-            this.$message.error("cli报告文件已经丢失")
-          }
+          this.newmanTaskList = res.data.data
+
+          const statusFilters = [];
+
+          this.newmanTaskList.forEach(item => {
+            const existingStatus = statusFilters.find(filter => filter.text === item.status);
+            if (!existingStatus) {
+              statusFilters.push({text: item.status, value: item.status});
+            }
+            item.key = item.id
+          })
+          this.columns.forEach(item => {
+            if (item.key === 'status') {
+              item.filters = statusFilters
+            }
+          })
+          this.tableData = this.newmanTaskList
+          this.cacheData = this.tableData.map(item => ({...item}));
         }
       })
     },
-
-
     // 获取未完成的任务
     getUnfinishedNewmanTasks() {
       var param = "?is_unfinished=true"
@@ -422,7 +383,7 @@ export default {
             this.taskCount = 1;
             if (task.log == null) {
               var putParam = {data: {log: this.tempTaskLog, id: task.id}}
-              this.$request.putNewmanTasksLog(putParam).then(res => {
+              this.$request.putNewmanTasks(putParam).then(res => {
                 if (res.status === 200) {
                   if (res.data.data.log != null && res.data.data.log.length !== 0) {
                     this.taskLog = res.data.data.log
@@ -448,6 +409,7 @@ export default {
             this.taskLog = []
           }
         }
+        // 当路由不在newman时，如果sessionStorage不存在currentTask，就不再定时请求
         if (this.$route.path === '/newman' ||
             sessionStorage.getItem('currentTask') !== null
         ){
@@ -455,7 +417,7 @@ export default {
         }
       });
     },
-
+    // 开始进行newman的测试任务
     async startPostmanTest(taskLog) {
       for (let i = 0; i < taskLog.length; i++) {
         var item = taskLog[i];
@@ -518,18 +480,57 @@ export default {
     // 更新日志及状态
     async modifyTaskLog(log, status, id) {
       var putParam = {data: {log: log, status: status, id: id}}
-      await this.$request.putNewmanTasksLog(putParam).then()
+      await this.$request.putNewmanTasks(putParam).then()
     },
-    initTaskLog() {
-      this.taskLog = [...this.tempTaskLog]
-    }
+
+    /*
+      modal框的回调
+     */
+    openRunNewmanModel() {
+      this.openRunNewmanModelFlag = true
+    },
+    openNewmanTaskModel() {
+      this.openNewmanTaskModelFlag = true
+    },
+    getRunNewmanModelStatus(status) {
+      this.openRunNewmanModelFlag = status
+    },
+    getNewmanModelTaskStatus(status) {
+      this.openNewmanTaskModelFlag = status
+    },
+    getRunTaskObj(taskObj) {
+      if (taskObj != null) {
+        this.runTestFlag = true
+      }
+    },
+
+    /*
+      下载文件
+     */
+    downloadFile(path) {
+      let fileName = path.substring(path.lastIndexOf('/') + 1);
+      this.$request.downloadFile(path).then(res => {
+        if (res.status === 200) {
+          fileDownload(res.data, fileName);
+        } else {
+          const hasHTML = fileName.includes("html");
+          const hasExcel = fileName.includes(".csv");
+          const hasTxt = fileName.includes(".txt");
+          console.log(hasExcel)
+          if (hasHTML || hasExcel) {
+            this.$message.error("文件可能丢失，也可能不存在，详情请下载cli报告看")
+          }
+          if (hasTxt){
+            this.$message.error("cli报告文件已经丢失")
+          }
+        }
+      })
+    },
   }
 }
 </script>
 
 <style scoped>
-
-
 .my-n-button {
   margin-top: 10px;
   display: flex;

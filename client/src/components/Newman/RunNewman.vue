@@ -1,6 +1,7 @@
 <template>
   <div>
     <a-modal v-model="visible" title="运行postman测试" on-ok="handleOk" :afterClose="afterClose" :maskClosable="false">
+      <!--表单底部按钮-->
       <template slot="footer">
         <a-button key="back" @click="handleCancel">
           取消
@@ -9,6 +10,8 @@
           提交
         </a-button>
       </template>
+
+      <!-- 表单-->
       <a-form-model
           ref="ruleForm"
           :model="form"
@@ -22,7 +25,6 @@
         <a-form-model-item label="描述" prop="description">
           <a-input v-model="form.description" rows="4" type="textarea"/>
         </a-form-model-item>
-
       </a-form-model>
     </a-modal>
   </div>
@@ -56,7 +58,7 @@ export default {
   watch:{
     openFlag:{
       handler: function (newVal,oldVal) {
-        console.log(newVal)
+        // 父组件给的openFlag值发变化 拷贝一份
         this.visible = newVal
       },
       // 深度观察监听
@@ -67,6 +69,9 @@ export default {
     this.visible = this.openFlag
   },
   methods: {
+    /*
+      modal按钮事件
+     */
     handleOk(e) {
       this.loading = true;
       this.$refs.ruleForm.validate(valid => {
@@ -89,6 +94,7 @@ export default {
                 }
               })
               setTimeout(() => {
+                // 向父组件发送updateModelStatus事件，表示modal关闭
                 this.$emit('updateModelStatus', false)
                 this.loading = false;
                 this.initFormData()
@@ -106,22 +112,14 @@ export default {
       });
     },
     handleCancel(e) {
+      // 向父组件发送updateModelStatus事件，表示modal关闭
       this.$emit('updateModelStatus', false)
     },
     afterClose(e){
+      // 向父组件发送updateModelStatus事件，表示modal关闭
       this.$emit('updateModelStatus', false)
     },
-    handleChange(info) {
-      const status = info.file.status;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        this.$message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === 'error') {
-        this.$message.error(`${info.file.name} file upload failed.`);
-      }
-    },
+    // 重置表单
     initFormData() {
       this.$refs.ruleForm.resetFields();
     }
