@@ -13,7 +13,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class LogSubscriber implements EventSubscriberInterface
 {
     const FILTER_ARRAY=[
-        "/functional/generatePostmanTest"
+        "/functional/generatePostmanTest",
+        "/functional/downloadFile"
     ];
     private OperationLogFactory $operationLogFactory;
     private OperationLogService $operationLogService;
