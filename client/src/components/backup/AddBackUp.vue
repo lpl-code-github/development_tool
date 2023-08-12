@@ -63,7 +63,7 @@ export default {
         name: '',
         desc: '',
         db: ''
-      },
+      }, // 表单的值
       rules: {
         name: [
           {required: true, message: '请输入操作名称', trigger: 'blur'},
@@ -72,13 +72,13 @@ export default {
         db: [
           {required: true, message: '请选择数据库', trigger: 'blur'},
         ],
-      },
+      }, // 表格校验规则
     };
   },
   watch: {
     openFlag: {
       handler: function (newVal, oldVal) {
-        console.log(newVal)
+        // 将父组件的值拷贝一份
         this.visible = newVal
       },
       // 深度观察监听
@@ -89,6 +89,9 @@ export default {
     this.visible = this.openFlag
   },
   methods: {
+    /*
+      表单提交  modal关闭
+     */
     handleOk(e) {
       this.loading = true;
       this.$refs.ruleForm.validate(valid => {
@@ -102,6 +105,7 @@ export default {
             if (res.status === 200){
               setTimeout(loadingMessage, 0);
               message.success("备份成功")
+              // 请求成功后 将新增的值传给父组件
               this.$emit('submit', res.data.data)
             }else {
               setTimeout(loadingMessage, 0);
@@ -109,6 +113,7 @@ export default {
           })
           this.initFormData()
           setTimeout(() => {
+            // 告诉父组件可以关闭了
             this.$emit('updateModelStatus', false)
             this.loading = false;
           }, 1);
@@ -118,19 +123,28 @@ export default {
         }
       });
     },
+
+    /*
+      modal关闭事件
+     */
     handleCancel(e) {
       this.initFormData()
+      // 告诉父组件可以关闭了
       this.$emit('updateModelStatus', false)
     },
     afterClose(e) {
       this.initFormData()
+      // 告诉父组件可以关闭了
       this.$emit('updateModelStatus', false)
     },
+
+    // select选择器 搜索功能
     filterOption(input, option) {
       return (
           option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       );
     },
+    // 重置表单
     initFormData() {
       this.$refs.ruleForm.resetFields();
     }

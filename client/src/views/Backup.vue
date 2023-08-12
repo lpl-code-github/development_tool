@@ -10,7 +10,7 @@
     <div class="my-b-button">
       <a-input-search placeholder="输入名称或描述搜索" style="width: 200px" @search="onSearch"/>
       <a-button type="primary" @click="backUp">
-        一键备份
+        新增备份
       </a-button>
     </div>
 
@@ -79,9 +79,9 @@ export default {
   components: {AddBackUp},
   data() {
     return {
-      openAddScriptModel: false,
-      dbList: [],
-      getDatabaseListFlag: false,
+      openAddScriptModel: false, // 控制AddScript的modal的开关
+      dbList: [], // 数据库列表
+      getDatabaseListFlag: false, // 是否获取dbList的标志
       columns: [
         {title: '名称', width: 200, dataIndex: 'name', scopedSlots: {customRender: 'name'}},
         {title: '描述', width: 350, dataIndex: 'description', scopedSlots: {customRender: 'description'}},
@@ -97,23 +97,25 @@ export default {
           sorter: (a, b) => new Date(a.created_at) - new Date(b.created_at),
         },
         {title: 'Action', dataIndex: '', key: 'x', scopedSlots: {customRender: 'action'}},
-      ],
-      backupList: [],
+      ],// table的数据
+      backupList: [], // 后台请求到数据
       paginationConfig: {
         defaultCurrent: 1,
         defaultPageSize: 5,
-      },
-      tableData: [],
-      cacheData: [],
-      editingKey: '',
-      componentKey: 0,
+      }, // 分页数据
+      tableData: [], // 表格数据
+      cacheData: [], // 缓存数据 用于编辑表格时，缓存之前的数据
+      editingKey: '', // 被编辑的行
+      componentKey: 0, // 组件key
     }
   },
   created() {
     this.getBackupList()
   },
-
   methods: {
+    /*
+      表格的一些事件
+     */
     handleChange(pagination, filters) {
       var tagFilterChecked = filters.db_name
       if (filters.db_name !== undefined && filters.db_name.length === 0) {
@@ -142,6 +144,10 @@ export default {
         this.$set(this, 'columns', [...columns]);
       }
     },
+
+    /*
+      请求db的list，请求成功打开备份数据库的modal表单
+     */
     async backUp() {
       await this.getDatabaseList();
 
@@ -151,10 +157,16 @@ export default {
         this.$message.error("获取数据库列表失败")
       }
     },
+
+    /*
+       一些请求事件
+     */
+    //搜索
     onSearch(value) {
       var params = "?key=" + value
       this.getBackupList(params)
     },
+    // 获取BackupList
     getBackupList(params) {
       if (params == null) {
         params = ""
@@ -182,6 +194,21 @@ export default {
         }
       })
     },
+    // 获取db的list，用于添加时from表单的选择框
+    async getDatabaseList() {
+      await this.$request.getDatabaseList().then(res => {
+        if (res.status === 200) {
+          this.dbList = res.data.data
+          this.getDatabaseListFlag = true
+        } else {
+          this.getDatabaseListFlag = false
+        }
+      })
+    },
+
+    /*
+      modal框的回调
+     */
     getModelStatus(status) {
       this.openAddScriptModel = status
     },
@@ -213,18 +240,10 @@ export default {
         this.cacheData = this.tableData.map(item => ({...item})); // 更新 cacheData
       }
     },
-    async getDatabaseList() {
-      await this.$request.getDatabaseList().then(res => {
-        if (res.status === 200) {
-          this.dbList = res.data.data
-          this.getDatabaseListFlag = true
-        } else {
-          this.getDatabaseListFlag = false
-        }
-      })
-    },
 
-    // table编辑
+    /*
+      table编辑功能
+     */
     handleChangeEdit(value, key, column) {
       const newData = [...this.tableData];
       const target = newData.find(item => key === item.key);
@@ -288,6 +307,10 @@ export default {
         this.tableData = newData;
       }
     },
+
+    /*
+       导入数据库
+     */
     importDb(key) {
       this.$confirm({
         title: '确认导入数据库吗？',
@@ -319,6 +342,10 @@ export default {
       });
 
     },
+
+    /*
+      删除数据库备份记录
+     */
     deleteDatabaseBackup(key) {
       this.$confirm({
         title: '确认删除备份吗?',
@@ -373,6 +400,10 @@ export default {
       });
 
     },
+
+    /*
+     下载备份的数据库sql文件
+     */
     downloadSQLFile(path){
       let fileName = path.substring(path.lastIndexOf('/') + 1);
       this.$request.downloadFile(path).then(res=>{
