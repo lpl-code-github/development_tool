@@ -24,8 +24,11 @@ const service = axios.create({
 // 请求拦截器(在请求之前进行一些配置)
 service.interceptors.request.use(
     config => {
-        // 加载顶部loading
-        NProgress.start()
+        var url = config.url
+        if (url !== '/functional/getSystemStatus'){
+            // 加载顶部loading
+            NProgress.start()
+        }
         return config
     },
     err => {
