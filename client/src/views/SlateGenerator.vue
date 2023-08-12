@@ -70,12 +70,13 @@ export default {
     }
   },
   mounted() {
+    // 从缓存中拿编辑器中的的doc
     var editDoc = localStorage.getItem("edit_doc");
     if (editDoc !== null && editDoc !== "") {
       this.docContent = editDoc
 
     }
-
+    // 从缓存中拿编辑器中拿已选择的controller
     var selectedController = localStorage.getItem("selected_controller");
     if (selectedController !== null && selectedController !== "") {
       if (editDoc !== null && editDoc === "") {
@@ -89,14 +90,7 @@ export default {
     }
   },
   methods: {
-    getControllerLists() {
-      var params = "?type=controller"
-      this.$request.getFileLists(params).then(res => {
-        if (res.status === 200) {
-          this.controllerLists = res.data
-        }
-      })
-    },
+    // 获取默认文档
     getDefaultClick() {
       if (this.docContent !== "") {
         this.buttonConfirmIsDisabled = false
@@ -108,32 +102,7 @@ export default {
       localStorage.removeItem("selected_controller");
       this.handleGetSlateDoc()
     },
-    handleGetSlateDoc(controller) {
-      this.loading = true
-      var param = ""
-      if (controller !== undefined) {
-        param = "?controller=" + controller
-      }
-      this.$request.getSlateDoc(param).then(res => {
-        if (res.status === 200) {
-          this.docContent = res.data
-        }
-        this.loading = false
-      })
-    },
-    confirm(e) {
-      this.componentKey += 1
-      this.existSelectController = false
-      localStorage.removeItem("selected_controller")
-      this.handleGetSlateDoc()
-    },
-    cancel(e) {
-    },
-    filterOption(input, option) {
-      return (
-          option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-      );
-    },
+    // controller选择器完成选择触发
     handleSelect(value, option) {
       localStorage.setItem("selected_controller", value)
       if (this.docContent !== "") {
@@ -157,7 +126,49 @@ export default {
       this.existSelectController = true
       this.selectedController = value
       this.handleGetSlateDoc(value)
-    }
+    },
+    // 选择器取消事件
+    confirm(e) {
+      this.componentKey += 1
+      this.existSelectController = false
+      localStorage.removeItem("selected_controller")
+      this.handleGetSlateDoc()
+    },
+    cancel(e) {
+    },
+    // 选择器搜索
+    filterOption(input, option) {
+      return (
+          option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      );
+    },
+
+    /*
+      一些请求事件
+     */
+    // 生成slate文档
+    handleGetSlateDoc(controller) {
+      this.loading = true
+      var param = ""
+      if (controller !== undefined) {
+        param = "?controller=" + controller
+      }
+      this.$request.getSlateDoc(param).then(res => {
+        if (res.status === 200) {
+          this.docContent = res.data
+        }
+        this.loading = false
+      })
+    },
+    // 获取r1所有controller
+    getControllerLists() {
+      var params = "?type=controller"
+      this.$request.getFileLists(params).then(res => {
+        if (res.status === 200) {
+          this.controllerLists = res.data
+        }
+      })
+    },
   }
 };
 </script>

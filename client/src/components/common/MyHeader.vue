@@ -88,6 +88,10 @@ export default {
     document.removeEventListener('click', this.handleOutsideClick);
   },
   methods: {
+    /*
+      一些请求事件
+     */
+    // 开关打开与关闭
     async handleQuickSwitch() {
       await this.$request.switchStatus().then(res => {
         if (res.status !== 200) {
@@ -107,6 +111,7 @@ export default {
         }
       })
     },
+    // 清除缓存
     handleClearCache(){
       var message = this.$message
       var loadingMessage = message.loading('RISKID环境中正在执行php bin/console cache:clear，您可以继续进行其他操作', 0)
@@ -125,12 +130,16 @@ export default {
         this.$bus.$emit('requestCompleted');
       })
     },
+
+    // 打开抽屉
     handleOpenDrawer(){
       this.openDrawer = true
     },
+    // 获取抽屉状态
     getDrawerStatus(status){
       this.openDrawer = status
     },
+
     // 监听手动关闭popover
     handleOutsideClick(event) {
       if (this.popoverIsShow  && !this.$refs.popover.$el.contains(event.target)) {

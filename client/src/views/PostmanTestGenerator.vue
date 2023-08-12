@@ -33,7 +33,7 @@
 <script>
 import Code from "@/components/code/Code";
 import Json from "@/components/code/Json";
-import clipboard from "clipboard";
+import clipboard from "clipboard"; // 复制组件
 export default {
   name: "PostmanTestGenerator",
   components: {Json, Code},
@@ -48,9 +48,11 @@ export default {
     }
   },
   methods:{
+    // 子组件的回调
     getJsonData(jsonData){
       this.jsonData = jsonData
     },
+    // 生成postman测试
     generatePostmanTest(){
       if (!this.jsonData.hasJsonFlag){
         this.$message.error("Json格式错误，请检查")
@@ -67,6 +69,7 @@ export default {
         }
       })
     },
+    // 复制文本
     copyMessage() {
       let _this = this;
       if (_this.codeText===""){

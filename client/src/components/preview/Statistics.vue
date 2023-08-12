@@ -62,12 +62,16 @@ export default {
     // this.getApiInfo()
   },
   methods:{
-    afterVisibleChange(val) {
-      console.log('visible', val);
-    },
+    // 抽屉关闭
     onClose() {
+      // 向父组件发送状态
       this.$emit('updateDrawerStatus', false)
     },
+
+    /*
+      一些请求事件
+     */
+    // 获取api信息并打开渲染echarts图表
     async getApiInfo() {
        await this.$request.getR1Api().then(res => {
          if (res.status !== 200) {
@@ -123,6 +127,10 @@ export default {
       window.addEventListener('resize', () => {
         this.myChart.resize()
       })
+    },
+
+    afterVisibleChange(val) {
+      console.log('visible', val);
     },
   }
 }

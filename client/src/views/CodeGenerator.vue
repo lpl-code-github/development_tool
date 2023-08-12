@@ -68,6 +68,37 @@ export default {
     this.getEntityLists()
   },
   methods: {
+    // entity选择器发生变化时触发
+    handleChange(value) {
+      this.loading = true // 打开code显示 的loading
+      this.selectEntity = value
+      this.$request.generateCode(this.selectEntity,this.selectedType).then(res=>{
+        if (res.status === 200){
+          this.codeText = res.data
+        }
+        this.loading = false
+      })
+    },
+    // entity选择器搜索
+    filterOption(input, option) {
+      return (
+          option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      );
+    },
+
+    /**
+     * 一些请求事件
+     */
+    // 获取r1所有的entity列表
+    getEntityLists(){
+      var params = "?type=entity"
+      this.$request.getFileLists(params).then(res=>{
+        if (res.status === 200){
+          this.entityLists = res.data
+        }
+      })
+    },
+    // radio发生变化 也就是需要生成代码类型发生变化时调用
     handleChangeType(e) {
       this.loading = true // 打开code显示 的loading
 
@@ -86,29 +117,8 @@ export default {
         this.loading = false
       }
     },
-    getEntityLists(){
-      var params = "?type=entity"
-      this.$request.getFileLists(params).then(res=>{
-        if (res.status === 200){
-          this.entityLists = res.data
-        }
-      })
-    },
-    handleChange(value) {
-      this.loading = true // 打开code显示 的loading
-      this.selectEntity = value
-      this.$request.generateCode(this.selectEntity,this.selectedType).then(res=>{
-        if (res.status === 200){
-          this.codeText = res.data
-        }
-        this.loading = false
-      })
-    },
-    filterOption(input, option) {
-      return (
-          option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-      );
-    },
+
+    // 复制功能
     copyMessage() {
       let _this = this;
       if (_this.codeText===""){
