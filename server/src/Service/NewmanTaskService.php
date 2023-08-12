@@ -6,6 +6,7 @@ use App\Factory\ExceptionFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\NewmanTask;
 use App\Dto\NewmanTaskDto;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\Process\Process;
 
@@ -34,6 +35,24 @@ class NewmanTaskService
     {
         $result = array();
 
+        /**
+         * 查询全部
+         */
+        if (count($params) == 0){
+            return $this->entityManager->getRepository(NewmanTask::class)->findAllTasks();
+        }
+
+        /**
+         * 查询未完成的测试任务，也就是正在完成的任务（active = 0），
+         * 由于handlePostNewmanTasks只能创建一个active = 0的任务，所以只会有一个测试任务在进行
+         *
+         *      1.查看缓存中是否存在newman的进程，
+         *        如果有，获取缓存的 newman命令输出的报告地址，和newman命令的进程id
+         *          2.通过ps命令看newman的进程是否还在执行中
+         *            如果不在执行，说明newman已经完成，通过newman命令的cli输出去查看newman是否执行成功
+         *                3.更新状态,newman是否执行成功作为日志最后一步的状态，也作为整个测试任务的状态
+         *
+         */
         if (array_key_exists("is_unfinished", $params)) {
             if ($params["is_unfinished"]) {
                 $newmanTask = $this->entityManager->getRepository(NewmanTask::class)->findUnfinishedTasks();
@@ -81,7 +100,7 @@ class NewmanTaskService
                                         break;
                                     }
                                     // 等待一段时间再重新尝试读取文件
-                                    sleep(1); // 可以根据实际情况调整等待时间
+                                    sleep(1);
                                 }
                             } catch (\Exception $e) {
                                 throw ExceptionFactory::InternalServerException("cli_output文件未找到");
@@ -113,6 +132,12 @@ class NewmanTaskService
         return $result;
     }
 
+    /**
+     * 执行一个shell脚本
+     * 判断一个进程是否存在（是否在运行）
+     * @param $pid
+     * @return bool
+     */
     private function getProcessRunningStatus($pid): bool
     {
         $command = 'if ps -p ' . $pid . ' -o pid= > /dev/null; then echo -n true; else echo -n false; fi';
@@ -203,11 +228,26 @@ class NewmanTaskService
      */
     private function deleteNewmanTask(NewmanTask $newmanTask, array $returnFields): array
     {
-        $newmanTask->setActive(0);
-        $this->entityManager->persist($newmanTask);
-        $this->entityManager->flush();
+        $this->entityManager->beginTransaction();
+        try {
+            $filesystem = new Filesystem();
+            $cliOutputPath = $newmanTask->getCliOutputPath();
+            $excelReportPath = $newmanTask->getExcelReportPath();
+            $htmlReportPath = $newmanTask->getHtmlReportPath();
 
-        $newmanTaskDto = new NewmanTaskDto($newmanTask);
-        return $newmanTaskDto->toArray($returnFields);
+            $newmanTaskDto = new NewmanTaskDto($newmanTask);
+            $this->entityManager->getRepository(NewmanTask::class)->remove($newmanTask, true);
+
+            $filesystem->remove($cliOutputPath);
+            $filesystem->remove($excelReportPath);
+            $filesystem->remove($htmlReportPath);
+
+            $this->entityManager->commit();
+
+            return $newmanTaskDto->toArray($returnFields);
+        }catch (\Exception $exception){
+            $this->entityManager->rollback();
+            throw ExceptionFactory::InternalServerException("删除失败：".$exception->getMessage());
+        }
     }
 }
