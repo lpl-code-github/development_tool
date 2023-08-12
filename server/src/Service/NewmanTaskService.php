@@ -39,9 +39,24 @@ class NewmanTaskService
          * 查询全部
          */
         if (count($params) == 0){
-            return $this->entityManager->getRepository(NewmanTask::class)->findAllTasks();
+            $newmanTasks = $this->entityManager->getRepository(NewmanTask::class)->findAllTasks();
+            foreach ($newmanTasks as $newmanTask){
+                $newmanTaskDto = new NewmanTaskDto($newmanTask);
+                $result[] = $newmanTaskDto->toArray($returnFields);
+            }
+            return $result;
         }
-
+        /**
+         * 模糊匹配
+         */
+        if (array_key_exists('key',$params)){
+            $newmanTasks = $this->entityManager->getRepository(NewmanTask::class)->findLikeNameOrDesc($params['key']);
+            foreach ($newmanTasks as $newmanTask){
+                $newmanTaskDto = new NewmanTaskDto($newmanTask);
+                $result[] = $newmanTaskDto->toArray($returnFields);
+            }
+            return $result;
+        }
         /**
          * 查询未完成的测试任务，也就是正在完成的任务（active = 0），
          * 由于handlePostNewmanTasks只能创建一个active = 0的任务，所以只会有一个测试任务在进行
@@ -81,16 +96,16 @@ class NewmanTaskService
                                 // 文件内容可能还没有被写进去，所以这里20秒内去获取文件内容
                                 $maxWaitTime = 20;
                                 $startTime = time();
-                                $newmanTaskStatus  = "not sure";
-                                $newmanRunStatus  = "not sure";
+                                $newmanTaskStatus  = "不确定";
+                                $newmanRunStatus  = "不确定";
                                 while (true) {
                                     if (file_exists($cliOutputPath)) {
                                         // 读取文件内容
                                         $firstLine = fgets(fopen($cliOutputPath, 'r'));
                                         if (!empty($firstLine) && $firstLine!='') {// 文件内容不为空
                                             $flag = (strpos($firstLine, 'newman') !== false && strpos($firstLine, 'error') == false && strpos($firstLine, 'failed') == false);
-                                            $newmanTaskStatus = $flag ? "success":'error';
-                                            $newmanRunStatus = $flag ?"success":'error';
+                                            $newmanTaskStatus = $flag ? "成功":'失败';
+                                            $newmanRunStatus = $flag ?"成功":'失败';
                                             break; // 退出循环
                                         }
                                     }
@@ -171,12 +186,18 @@ class NewmanTaskService
      * @param array $params
      * @param array $returnFields
      * @return array
+     * @throws \Exception
      */
     public function handlePutNewmanTasks(array $params, array $returnFields): array
     {
+        /**
+         * @var NewmanTask $newmanTask
+         */
         $newmanTask = $this->entityManager->getRepository(NewmanTask::class)->findOneById($params['id']);
+        if (!$newmanTask){
+            throw ExceptionFactory::NotFoundException("未找到");
+        }
 
-        // example
         if (array_key_exists('log', $params)) {
             $newmanTask->setLog($params["log"]);
         }
@@ -185,6 +206,13 @@ class NewmanTaskService
                 $newmanTask->setActive(1);
             }
             $newmanTask->setStatus($params["status"]);
+        }
+        if (array_key_exists('name', $params)) {
+            $newmanTask->setName($params["name"]);
+        }
+
+        if (array_key_exists('description', $params)) {
+            $newmanTask->setDescription($params["description"]);
         }
 
         $this->entityManager->persist($newmanTask);
@@ -200,6 +228,7 @@ class NewmanTaskService
      * @param array $params
      * @param array $returnFields
      * @return array
+     * @throws \Exception
      */
     public function handleDeleteNewmanTasks(array $params, array $returnFields): array
     {

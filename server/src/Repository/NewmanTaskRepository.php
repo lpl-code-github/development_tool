@@ -65,7 +65,18 @@ class NewmanTaskRepository extends ServiceEntityRepository
             ->andWhere('n.active = :value')
             ->setParameter('value', 1)
             ->orderBy('n.created_at', 'DESC')
-            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findLikeNameOrDesc($keyword)
+    {
+        $queryBuilder = $this->createQueryBuilder('n');
+        return $queryBuilder
+            ->where($queryBuilder->expr()->like('n.name', ':keyword'))
+            ->orWhere($queryBuilder->expr()->like('n.description', ':keyword'))
+            ->setParameter('keyword', '%' . $keyword . '%')
+            ->orderBy('n.created_at', 'DESC')
             ->getQuery()
             ->getResult();
     }

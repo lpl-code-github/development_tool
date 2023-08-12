@@ -40,20 +40,19 @@ class NewmanTasksController extends BaseController
         $isUnfinished = (bool) $request->query->get("is_unfinished") ?? null;
         $id = $request->query->get("id") ?? null;
         $ids = $request->query->get("ids") ?? null;
+        $key = $request->query->get("key");
 
         // validate params
         // ...
 
         $queryParams = array();
-        if ($id) {
-            $queryParams['id'] = $id;
-        }
-        if ($ids) {
-            $queryParams['ids'] = $ids;
-        }
         if($isUnfinished){
             $queryParams['is_unfinished'] = $isUnfinished;
         }
+        if ($key) {
+            $queryParams["key"] = $key;
+        }
+
 
         // processing
         $resultArray['data'] = $this->newmanTaskService->handleGetNewmanTasks($queryParams, self::RETURN_FIELD);
