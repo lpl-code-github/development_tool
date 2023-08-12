@@ -6,8 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="0222d096-929b-40cb-a84f-6bd3d4e76e5b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../server/config/services.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/config/services.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Resource/NewmanTasksController.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Controller/Resource/NewmanTasksController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateControllerCodeService.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateControllerCodeService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/Dto/NewmanTaskDto.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Dto/NewmanTaskDto.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/EventSubscriber/LogSubscriber.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/EventSubscriber/LogSubscriber.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/Factory/OperationLogFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Factory/OperationLogFactory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/Repository/NewmanTaskRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Repository/NewmanTaskRepository.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/Service/NewmanService.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Service/NewmanService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/Service/NewmanTaskService.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Service/NewmanTaskService.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/Service/OperationLogService.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/Service/OperationLogService.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +51,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/components/Newman" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/components/log" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -57,11 +62,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/components/Newman" />
+      <recent name="$PROJECT_DIR$/src/components/log" />
       <recent name="$PROJECT_DIR$/src/components" />
+      <recent name="$PROJECT_DIR$/src/components/Newman" />
       <recent name="$PROJECT_DIR$/src/assets" />
       <recent name="$PROJECT_DIR$/src/components/backup" />
-      <recent name="$PROJECT_DIR$/src/components/switch" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/components/Script" />
@@ -109,6 +114,10 @@
       <workItem from="1690546707483" duration="11018000" />
       <workItem from="1690567064128" duration="8075000" />
       <workItem from="1690575964531" duration="145733000" />
+      <workItem from="1691498801307" duration="10763000" />
+      <workItem from="1691512797534" duration="558000" />
+      <workItem from="1691639425818" duration="441000" />
+      <workItem from="1691744846126" duration="8485000" />
     </task>
     <servers />
   </component>
