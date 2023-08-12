@@ -24,7 +24,7 @@
         </a-button>
       </div>
       <a-spin size="large" :spinning="loading">
-         <Code :code-text="codeText"><a-spin /></Code>
+         <Code :language-class="'lang-javascript'" :code-text="codeText"><a-spin /></Code>
       </a-spin>
     </div>
   </div>

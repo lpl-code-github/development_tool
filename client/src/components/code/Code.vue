@@ -1,7 +1,7 @@
 <template>
   <div class="my-code">
      <pre v-myHighlight style="margin: 0!important;">
-        <code style="height: 60vh" class="lang-javascript" v-text="codeText"></code>
+        <code style="height: 60vh" :class="languageClass" v-text="codeText"></code>
     </pre>
   </div>
 </template>
@@ -11,6 +11,10 @@
 export default {
   props:{
     codeText: {
+      type: String,
+      required: true
+    },
+    languageClass: {
       type: String,
       required: true
     },
