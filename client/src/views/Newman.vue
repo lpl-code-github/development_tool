@@ -416,6 +416,7 @@ export default {
           var data = res.data.data
           if (data.length !== 0) {
             var task = data[0];
+            sessionStorage.setItem('currentTask',task.id)
             this.currentTask = task
             this.taskName = task.name;
             this.taskCount = 1;
@@ -440,13 +441,18 @@ export default {
               }
             }
           } else {
+            sessionStorage.removeItem('currentTask')
             this.currentTask = null
             this.taskName = "";
             this.taskCount = 0;
             this.taskLog = []
           }
         }
-        setTimeout(this.getUnfinishedNewmanTasks, 3000);
+        if (this.$route.path === '/newman' ||
+            sessionStorage.getItem('currentTask') !== null
+        ){
+          setTimeout(this.getUnfinishedNewmanTasks, 3000);
+        }
       });
     },
 
