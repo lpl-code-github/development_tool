@@ -24,7 +24,7 @@ class RiskIdController extends BaseController
     /**
      * @Route("/clearCache", name="清除R1缓存", methods={"POST"})
      */
-    public function clearCache(): JsonResponse
+    public function executeClearCache(): JsonResponse
     {
         $resultArray = array();
         $resultArray['data']['handle'] = $this->riskidService->clearCache();
@@ -34,7 +34,7 @@ class RiskIdController extends BaseController
     /**
      * @Route("/getApiInfo", name="获取RISKID所有API信息", methods={"GET"})
      */
-    public function getApiInfo(): JsonResponse
+    public function executeGetApiInfo(): JsonResponse
     {
         $resultArray = array();
         $apiInfos = $this->riskidService->getApiInfos();
@@ -99,7 +99,7 @@ class RiskIdController extends BaseController
      * @Route("/getFileLists", name="获取RISKID所有Entity列表", methods={"GET"})
      * @throws \Exception
      */
-    public function getFileLists(Request $request): JsonResponse
+    public function executeGetFileLists(Request $request): JsonResponse
     {
         $type = $request->query->get('type') ?? null;
         if (!$type){
@@ -115,7 +115,7 @@ class RiskIdController extends BaseController
      * @Route("/switchStatus", name="获取快捷开关操作", methods={"GET"})
      * @throws \Exception
      */
-    public function switchStatus(): JsonResponse
+    public function executeSwitchStatus(): JsonResponse
     {
         $resultArray = array();
         $devEnvErrorMessageResult = array();
@@ -158,7 +158,7 @@ class RiskIdController extends BaseController
      * @Route("/quickSwitch", name="快捷开关操作", methods={"PUT"})
      * @throws \Exception
      */
-    public function quickSwitch(Request $request): JsonResponse
+    public function executeQuickSwitch(Request $request): JsonResponse
     {
         $resultArray = array();
 
@@ -209,7 +209,7 @@ class RiskIdController extends BaseController
      * @Route("/getDatabaseList", name="获取RiskId所在DB中所有的数据库", methods={"GET"})
      * @throws \Exception
      */
-    public function getDatabaseList(): JsonResponse
+    public function executeGetDatabaseList(): JsonResponse
     {
         $resultArray['data'] = $this->riskidService->handleGetDataBaseList();
         return new JsonResponse($resultArray);
