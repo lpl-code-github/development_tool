@@ -49,7 +49,7 @@
           <router-view style="height:95%;overflow-y: auto"></router-view>
         </a-layout-content>
         <a-layout-footer style="text-align: center;height: 7%">
-          Development Tool ©2023 Created by Teamsupport ApiTeam
+          Development Tool ©2023 Created by Teamsupport Api Team
         </a-layout-footer>
       </a-layout>
     </a-layout>
