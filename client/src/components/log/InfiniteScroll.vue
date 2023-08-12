@@ -136,7 +136,7 @@ export default {
         if (newData.length < this.perPage) {
           // 如果新加载的数据少于 perPage 条，说明已经加载完全部数据
           if (this.showMessage){
-            this.$message.info("已经到底了")
+            this.$message.info("加载完毕")
             this.showMessage = false
           }
           this.busy = true;
