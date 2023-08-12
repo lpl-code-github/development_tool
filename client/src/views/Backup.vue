@@ -63,7 +63,7 @@
         </template>
 
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
-          文件路径：&nbsp;{{ record.path }}
+          SQL文件路径：&nbsp;<a @click="downloadSQLFile(record.path)">{{ record.path }}</a>
         </p>
       </a-table>
     </div>
@@ -72,6 +72,7 @@
 
 <script>
 import AddBackUp from "@/components/backup/AddBackUp";
+import fileDownload from 'js-file-download';
 
 export default {
   name: "Backup",
@@ -140,7 +141,6 @@ export default {
         })
         this.$set(this, 'columns', [...columns]);
       }
-      console.log(this.columns)
     },
     async backUp() {
       await this.getDatabaseList();
@@ -252,18 +252,17 @@ export default {
         // 校验
 
         let nameLength = target.name.length;
-        let descriptionLength = target.description.length;
 
         if (!(nameLength >= 5 && length <= 50)) {
           this.$message.warning("名称长度应该在5～50之间")
           return
         }
-        if (descriptionLength === 0) {
-          this.$message.warning("描述不能为空")
-          return
-        }
         var param = {
-          data: target
+          data: {
+            id:target.id,
+            name:target.name,
+            description:target.description
+          }
         }
         this.$request.putDatabaseBackup(param).then(res => {
           if (res.status === 200) {
@@ -373,6 +372,14 @@ export default {
         },
       });
 
+    },
+    downloadSQLFile(path){
+      let fileName = path.substring(path.lastIndexOf('/') + 1);
+      this.$request.downloadFile(path).then(res=>{
+        if (res.status === 200){
+          fileDownload(res.data, fileName);
+        }
+      })
     }
   }
 }
