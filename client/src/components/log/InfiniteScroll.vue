@@ -73,6 +73,7 @@ export default {
       showData: [],
       loadedCount: 0, // 已经加载的数据数量
       perPage: 20, // 每页的数据数量
+      showMessage: false
     }
   },
   computed: {
@@ -107,6 +108,7 @@ export default {
     // 更新已加载数据的数量
     this.loadedCount = endIndex;
     this.loading = false
+    this.showMessage = true
   },
   methods:{
     handleInfiniteOnLoad() {
@@ -132,7 +134,11 @@ export default {
         this.loading = false;
 
         if (newData.length < this.perPage) {
-          // 如果新加载的数据少于 perPage 条，说明已经加载完全部数据，隐藏加载更多按钮
+          // 如果新加载的数据少于 perPage 条，说明已经加载完全部数据
+          if (this.showMessage){
+            this.$message.info("已经到底了")
+            this.showMessage = false
+          }
           this.busy = true;
         } else {
           this.busy = false;
