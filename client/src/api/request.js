@@ -157,6 +157,26 @@ export const postNewmanTasks = (param) => {
         .then(res=> res)
 }
 
+export const putNewmanTasks = (param) => {
+    return service
+        .request({
+            url: '/resource/newman_tasks',
+            method: 'put',
+            data:param
+        })
+        .then(res=> res)
+}
+
+export const deleteNewmanTasks = (param) => {
+    return service
+        .request({
+            url: '/resource/newman_tasks',
+            method: 'delete',
+            data:param
+        })
+        .then(res=> res)
+}
+
 export const getNewmanTasks = (param) => {
     return service
         .request({
@@ -165,6 +185,7 @@ export const getNewmanTasks = (param) => {
         })
         .then(res=> res)
 }
+
 
 export const putNewmanTasksLog = (param) => {
     return service
@@ -182,6 +203,21 @@ export const runNewman = (param) => {
             url: '/functional/runNewman',
             method: 'post',
             data: param
+        })
+        .then(res=> res)
+}
+
+export const downloadFile = (path) => {
+    return service
+        .request({
+            url: '/functional/downloadFile',
+            data:{
+                data:{
+                    path:path
+                }
+            },
+            responseType: 'blob',
+            method: 'post'
         })
         .then(res=> res)
 }
