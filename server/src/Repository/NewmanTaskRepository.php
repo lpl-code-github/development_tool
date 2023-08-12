@@ -59,6 +59,17 @@ class NewmanTaskRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findAllTasks()
+    {
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.active = :value')
+            ->setParameter('value', 1)
+            ->orderBy('n.created_at', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return NewmanTask[] Returns an array of NewmanTask objects
     //  */
