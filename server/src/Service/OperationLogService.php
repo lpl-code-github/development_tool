@@ -35,6 +35,20 @@ class OperationLogService
                 "/resource/newman_tasks",
                 "/functional/runNewman"
             ]
+        ],
+        [
+            "id" => "4",
+            "name" => "脚本",
+            "route" => [
+                "/resource/scripts"
+            ]
+        ],
+        [
+            "id" => "5",
+            "name" => "文件上传",
+            "route" => [
+                "/functional/uploadFile"
+            ]
         ]
     ];
 
