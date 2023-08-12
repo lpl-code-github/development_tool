@@ -27,6 +27,9 @@ class NewmanService
     }
 
     /**
+     *
+     * 这是测试任务的第四步，进行newman测试
+     *
      * @throws \Exception
      * @throws \Psr\Cache\InvalidArgumentException
      */
