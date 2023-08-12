@@ -39,7 +39,7 @@ class NewmanTasksController extends BaseController
 
         $isUnfinished = (bool) $request->query->get("is_unfinished") ?? null;
         $id = $request->query->get("id") ?? null;
-        $ids = $request->query->get("id") ?? null;
+        $ids = $request->query->get("ids") ?? null;
 
         // validate params
         // ...
