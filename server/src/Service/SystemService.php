@@ -22,7 +22,7 @@ class SystemService
 
     /**
      * 获取系统硬件信息
-     *
+     * 包括cpu占用率 内存占用率
      * @param string $type 硬件类型
      * @return float
      */
