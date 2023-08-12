@@ -41,6 +41,8 @@ class OperationLogFactory
         } else {
             $uri = $request->getRequestUri();
         }
+        $uri = strstr($uri, '?', true);
+
         // 响应体
         $responseData = json_decode($response->getContent(), true);
 
@@ -93,6 +95,8 @@ class OperationLogFactory
         $requestData = json_decode($request->getContent(), true);
         if ($uri == "/functional/quickSwitch") {
             return $this->handleQuickSwitchRewriteActionName($requestData);
+        }elseif ($uri == "/functional/uploadFile"){
+            return $this->handleUploadFileRewriteActionName($request);
         }
         return null;
     }
@@ -121,5 +125,25 @@ class OperationLogFactory
             }
         }
         return null;
+    }
+
+    /**
+     * 重写/functional/uploadFile接口日志的ActionName
+     * @param $request
+     * @return string|null
+     */
+    function handleUploadFileRewriteActionName($request): ?string
+    {
+        $type = $request->query->get('type') ?? null;
+        $file = $request->files->get('file');
+        $extension = $file->getClientOriginalExtension();
+        $filename = substr($file->getClientOriginalName(), 0, 255 - strlen($extension) - 1);
+
+        switch ($type) {
+            case "script":
+                return "上传一个脚本文件：".$filename;
+            default:
+                return null;
+        }
     }
 }
