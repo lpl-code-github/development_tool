@@ -109,7 +109,7 @@
         <!--表格展开菜单-->
         <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
           <span>
-            <span style="font-weight: bolder">SQL文件路径：</span> &nbsp;
+            <span style="font-weight: bolder">脚本文件路径：</span> &nbsp;
             <span v-if="!record.editable"><a @click="downloadScriptFile(record.path)">{{ record.path }}</a></span>
             <span v-else>{{ record.path }}</span>
             &nbsp;&nbsp;
@@ -225,16 +225,6 @@ export default {
       selectedTagsItems: '',// 编辑模式下，选中的tag
     }
   },
-  watch: {
-    tableData: {
-      handler: function (newVal, oldVal) {
-        console.log("new", newVal)
-        console.log("old", oldVal)
-      },
-      // 深度观察监听
-      deep: true
-    }
-  },
   created() {
     this.getScriptData()
     this.getAllTag()
@@ -335,7 +325,7 @@ export default {
         target.properties.forEach((item, index) => {
           if (item === "") {
             const num = parseInt(index) + 1;
-            message = "第" + num + "个参数为空，不合法";
+            message = "命令行参数存在空字段";
           }
         })
         if (message !== '') {
@@ -571,10 +561,11 @@ export default {
     addScript() {
       this.openAddScriptModel = true
     },
-
+    // 执行一个脚本 并获取响应 直接下载
     runScript(key) {
+      var message = this.$message
+      var loadingMessage = message.loading('正在执行脚本，您可以继续进行其他操作，但不要刷新页面', 0)
       var target = this.scriptData.find(item => key === item.key);
-      console.log(target.id)
       var param = {
         data: {
           script_id: target.id
@@ -582,10 +573,14 @@ export default {
       }
       this.$request.runScript(param).then(res=>{
         if (res.status === 200){
-          this.$message.success("脚本执行成功")
-          console.log(res.data)
+          setTimeout(loadingMessage, 0);
+          message.success('脚本执行成功', 2.5)
+          // 下载响应
+          const fileName = 'run_'+ target.name +'_' + this.getNow();
+          fileDownload(res.data, fileName);
         }else {
-          this.$message.error("脚本执行失败")
+          setTimeout(loadingMessage, 0);
+          message.success('脚本执行失败', 2.5)
         }
       })
     },
@@ -651,6 +646,20 @@ export default {
         }
       })
     },
+
+    // 获取当前时间
+    getNow(){
+      var date = new Date();
+
+      var year = date.getFullYear();
+      var month = ("0" + (date.getMonth() + 1)).slice(-2); //月份从0开始，所以要加1
+      var day = ("0" + date.getDate()).slice(-2);
+      var hours = ("0" + date.getHours()).slice(-2);
+      var minutes = ("0" + date.getMinutes()).slice(-2);
+      var seconds = ("0" + date.getSeconds()).slice(-2);
+
+      return year + month + day + hours + minutes + seconds
+    }
   }
 }
 </script>
