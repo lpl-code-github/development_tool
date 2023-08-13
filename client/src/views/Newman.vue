@@ -430,7 +430,7 @@ export default {
                 taskLog[i].status = "成功"
                 await this.modifyTaskLog(this.taskLog, null, this.currentTask.id)
               } else {
-                taskLog[i].status = "error" + res.data.message;
+                taskLog[i].status = "error" + res.message;
                 await this.modifyTaskLog(this.taskLog, "error", this.currentTask.id)
               }
 
@@ -441,7 +441,7 @@ export default {
                 taskLog[i].status = "成功"
                 await this.modifyTaskLog(this.taskLog, null, this.currentTask.id)
               } else {
-                taskLog[i].status = "error" + res.data.message;
+                taskLog[i].status = "error" + res.message;
                 await this.modifyTaskLog(this.taskLog, "error", this.currentTask.id)
               }
             });
@@ -451,7 +451,7 @@ export default {
                 taskLog[i].status = "成功"
                 await this.modifyTaskLog(this.taskLog, null, this.currentTask.id)
               } else {
-                taskLog[i].status = "error" + res.data.message;
+                taskLog[i].status = "error" + res.message;
                 await this.modifyTaskLog(this.taskLog, "error", this.currentTask.id)
               }
             });
@@ -467,7 +467,7 @@ export default {
                 if (res.status === 200) { // 执行成功
                   localStorage.setItem("run_postman_flag", this.currentTask.id);
                 } else {
-                  taskLog[i].status = "error" + res.data.message;
+                  taskLog[i].status = "error" + res.message;
                   await this.modifyTaskLog(this.taskLog, "error", this.currentTask.id);
                 }
               });
