@@ -63,7 +63,7 @@
         </template>
 
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
-          SQL文件路径：&nbsp;<a @click="downloadSQLFile(record.path)">{{ record.path }}</a>
+          <span style="font-weight: bolder">SQL文件路径：</span>&nbsp;<a @click="downloadSQLFile(record.path)">{{ record.path }}</a>
         </p>
       </a-table>
     </div>
@@ -189,7 +189,7 @@ export default {
               item.filters = dbFilters
             }
           })
-          this.tableData = this.backupList
+          this.tableData = [...this.backupList]
           this.cacheData = this.tableData.map(item => ({...item}));
         }
       })
@@ -269,10 +269,9 @@ export default {
       const targetCache = newCacheData.find(item => key === item.key);
       if (target && targetCache) {
         // 校验
-
         let nameLength = target.name.length;
 
-        if (!(nameLength >= 5 && length <= 50)) {
+        if (!(nameLength >= 5 && nameLength <= 50)) {
           this.$message.warning("名称长度应该在5～50之间")
           return
         }

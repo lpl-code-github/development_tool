@@ -40,7 +40,6 @@
   </div>
 </template>
 <script>
-import {postDatabaseBackup} from "@/api/request";
 
 export default {
   name: "AddBackUp",
