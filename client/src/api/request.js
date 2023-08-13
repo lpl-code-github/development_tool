@@ -1,5 +1,6 @@
 import {service} from '@/api/index'
 
+
 /*
     快捷开关的请求
  */
@@ -228,6 +229,75 @@ export const runNewman = (param) => {
 }
 
 /*
+    ScriptData的接口
+ */
+export const getScriptData = (param) => {
+    return service
+        .request({
+            url: '/resource/scripts'+param,
+            method: 'get'
+        })
+        .then(res=> res)
+}
+export const postScriptData = (param) => {
+    return service
+        .request({
+            url: '/resource/scripts',
+            data: param,
+            method: 'post'
+        })
+        .then(res=> res)
+}
+export const putScriptData = (param) => {
+    return service
+        .request({
+            url: '/resource/scripts',
+            data: param,
+            method: 'put'
+        })
+        .then(res=> res)
+}
+export const deleteScriptData = (params) => {
+    return service
+        .request({
+            url: '/resource/scripts',
+            data: params,
+            method: 'delete'
+        })
+        .then(res=> res)
+}
+export const runScript = (params) => {
+    return service
+        .request({
+            url: '/functional/runScript',
+            data: params,
+            method: 'post'
+        })
+        .then(res=> res)
+}
+
+/*
+    Tags的接口
+ */
+export const getTags = () => {
+    return service
+        .request({
+            url: '/resource/tags',
+            method: 'get'
+        })
+        .then(res=> res)
+}
+export const postTags = (params) => {
+    return service
+        .request({
+            url: '/resource/tags',
+            data: params,
+            method: 'post'
+        })
+        .then(res=> res)
+}
+
+/*
     文件相关的接口
  */
 export const downloadFile = (path) => {
@@ -240,6 +310,16 @@ export const downloadFile = (path) => {
                 }
             },
             responseType: 'blob',
+            method: 'post'
+        })
+        .then(res=> res)
+}
+export const uploadFile = (data,type) => {
+    return service
+        .request({
+            url: '/functional/uploadFile?type='+type,
+            maxBodyLength: Infinity,
+            data : data,
             method: 'post'
         })
         .then(res=> res)
