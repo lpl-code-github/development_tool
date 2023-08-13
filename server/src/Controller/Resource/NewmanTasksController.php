@@ -114,7 +114,7 @@ class NewmanTasksController extends BaseController
     }
 
     /**
-     * @Route("/newman_tasks", name="remove newmanTasks", methods={"DELETE"})
+     * @Route("/newman_tasks", name="删除一个Task", methods={"DELETE"})
      * @throws \Exception
      */
     public function executeDelete(Request $request): Response
