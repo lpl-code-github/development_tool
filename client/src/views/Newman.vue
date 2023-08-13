@@ -75,7 +75,7 @@
           </div>
         </template>
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
-          newman cli输出：&nbsp;<a @click="downloadFile(record.cli_output_path)">{{ record.cli_output_path }}</a>
+          <span style="font-weight: bolder">newman cli输出：</span> &nbsp;<a @click="downloadFile(record.cli_output_path)">{{ record.cli_output_path }}</a>
         </p>
       </a-table>
     </div>
@@ -237,7 +237,7 @@ export default {
         let nameLength = target.name.length;
         let descriptionLength = target.description.length;
 
-        if (!(nameLength >= 5 && length <= 50)) {
+        if (!(nameLength >= 5 && nameLength <= 50)) {
           this.$message.warning("名称长度应该在5～50之间")
           return
         }
@@ -364,7 +364,7 @@ export default {
               item.filters = statusFilters
             }
           })
-          this.tableData = this.newmanTaskList
+          this.tableData = [...this.newmanTaskList]
           this.cacheData = this.tableData.map(item => ({...item}));
         }
       })
