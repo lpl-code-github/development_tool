@@ -40,7 +40,9 @@ class OperationLogService
             "id" => "4",
             "name" => "脚本",
             "route" => [
-                "/resource/scripts"
+                "/resource/scripts",
+                "/resource/tags",
+                "/functional/runScript"
             ]
         ],
         [

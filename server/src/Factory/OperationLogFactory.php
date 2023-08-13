@@ -132,10 +132,11 @@ class OperationLogFactory
      * @param $request
      * @return string|null
      */
-    function handleUploadFileRewriteActionName($request): ?string
+    function handleUploadFileRewriteActionName(Request $request): ?string
     {
         $type = $request->query->get('type') ?? null;
         $file = $request->files->get('file');
+
         $extension = $file->getClientOriginalExtension();
         $filename = substr($file->getClientOriginalName(), 0, 255 - strlen($extension) - 1);
 
