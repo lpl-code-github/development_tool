@@ -146,6 +146,9 @@ EOF;
             if ($propertyName == "active"){
                 continue;
             }
+            if ($propertyName == "id"){
+                continue;
+            }
             $upperFirstPropertyName = GenerateUtil::upperFirst($propertyName);
             $toArrayCode .= "        if (in_array(\"$propertyName\", \$fields)) {\n";
             $toArrayCode .= "            \$resultArray[\"$propertyName\"] = \$this->get$upperFirstPropertyName();\n";
