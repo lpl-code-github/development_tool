@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0222d096-929b-40cb-a84f-6bd3d4e76e5b" name="Changes" comment="" />
+    <list default="true" id="0222d096-929b-40cb-a84f-6bd3d4e76e5b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../server/config/services.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/config/services.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,6 +17,7 @@
       <list>
         <option value="JavaScript File" />
         <option value="Vue Single File Component" />
+        <option value="TypeScript File" />
       </list>
     </option>
   </component>
@@ -42,7 +45,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/components/Script" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/views" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -53,11 +56,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/views" />
       <recent name="$PROJECT_DIR$/src/components/Script" />
       <recent name="$PROJECT_DIR$/src/components/log" />
       <recent name="$PROJECT_DIR$/src/components" />
       <recent name="$PROJECT_DIR$/src/components/Newman" />
-      <recent name="$PROJECT_DIR$/src/assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/components/Script" />
@@ -110,7 +113,8 @@
       <workItem from="1691639425818" duration="441000" />
       <workItem from="1691744846126" duration="8485000" />
       <workItem from="1691854615949" duration="37800000" />
-      <workItem from="1691917152575" duration="20631000" />
+      <workItem from="1691917152575" duration="20908000" />
+      <workItem from="1692010769907" duration="3722000" />
     </task>
     <servers />
   </component>
