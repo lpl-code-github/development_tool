@@ -2,6 +2,8 @@
 
 namespace App\Service\Generator;
 
+use App\Utils\GenerateUtil;
+
 class GeneratePostmanTestService
 {
     /**
@@ -12,8 +14,8 @@ class GeneratePostmanTestService
     function generatorPostmanTest($data): string
     {
         // 调用 generateSchema() 函数，生成 JSON Schema
-
         $schema =  $this->generateSchema($data, null);
+
         // 将 JSON Schema 对象格式化成 JSON 数据，并进行缩进
         $schemaFormatted = json_encode($schema, JSON_PRETTY_PRINT);
         return $this->getJsonSchemaTest($schemaFormatted);
@@ -21,15 +23,15 @@ class GeneratePostmanTestService
 
     /**
      * 生成postman jsonSchema
+     *
      * @param $data
      * @param $parentFiled
-     * @return array|string[]|\string[][]
+     * @return array|array[]|string[]
      */
     function generateSchema($data, $parentFiled): array
     {
-
         if (is_array($data)){
-            if ($this->isArrayAssociative($data)){
+            if (GenerateUtil::isArrayAssociative($data)){
                 $properties = array();
                 $keys = array();
                 foreach ($data as $k => $v) {
@@ -44,7 +46,6 @@ class GeneratePostmanTestService
                     'required' => $keys,
                 ];
             }else{
-//                $i = 1/0;
                 $arr = $data;
                 if (count($arr) == 0) { // 如果数组为空，则返回类型为数组的对象
                     return [
@@ -52,7 +53,7 @@ class GeneratePostmanTestService
                     ];
                 }
 
-                if (is_array($parentFiled)&& !$this->isArrayAssociative($parentFiled)) { // 判断父级对象的类型是否为数组
+                if (is_array($parentFiled)&& !GenerateUtil::isArrayAssociative($parentFiled)) { // 判断父级对象的类型是否为数组
                     return []; // 如果父级对象是数组类型，则返回一个空的 JSON 对象
                 } else { // 否则返回包含数组项类型和所属数组类型的对象
                     return [
