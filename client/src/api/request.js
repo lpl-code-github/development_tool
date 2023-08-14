@@ -95,6 +95,15 @@ export const getSlateDoc = (param) => {
         })
         .then(res=> res)
 }
+export const generateTsInterface = (param,name) => {
+    return service
+        .request({
+            url: '/functional/generateTsInterface?name='+name,
+            method: 'post',
+            data: param
+        })
+        .then(res=> res)
+}
 
 /*
     获取日志的请求
