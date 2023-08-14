@@ -55,7 +55,7 @@ export default {
     // 生成postman测试
     generatePostmanTest(){
       if (!this.jsonData.hasJsonFlag){
-        this.$message.error("Json格式错误，请检查")
+        this.$message.error("Json格式错误或为空，请检查")
         return
       }
       this.loading = true
