@@ -148,7 +148,7 @@ export default {
             message.success('清除缓存执行成功', 2.5)
           }else {
             setTimeout(loadingMessage, 0);
-            message.success('执行失败，请去手动执行命令php bin/console cache:clear', 2.5)
+            message.error('执行失败，请去手动执行命令php bin/console cache:clear', 2.5)
           }
         }
         this.$bus.$emit('requestCompleted');
