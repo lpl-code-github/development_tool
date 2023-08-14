@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Factory\ExceptionFactory;
+use App\Service\Generator\GenerateApiTsInterfaceService;
 use App\Service\Generator\GenerateControllerCodeService;
 use App\Service\Generator\GenerateDtoCodeService;
 use App\Service\Generator\GenerateFactoryCodeService;
@@ -28,6 +29,7 @@ class GeneratorService
     private GenerateControllerCodeService $generateControllerCodeService;
     private GenerateServiceCodeService $generateServiceCodeService;
     private GenerateSlateService $generateSlateService;
+    private GenerateApiTsInterfaceService $generateApiTsInterfaceService;
     private RiskidService $riskidService;
     private ParameterBagInterface $parameterBag;
 
@@ -38,6 +40,7 @@ class GeneratorService
         GenerateControllerCodeService $generateControllerCodeService,
         GenerateServiceCodeService    $generateServiceCodeService,
         GenerateSlateService          $generateSlateService,
+        GenerateApiTsInterfaceService $generateApiTsInterfaceService,
         RiskidService                 $riskidService,
         ParameterBagInterface         $parameterBag
     )
@@ -48,6 +51,7 @@ class GeneratorService
         $this->generateControllerCodeService = $generateControllerCodeService;
         $this->generateServiceCodeService = $generateServiceCodeService;
         $this->generateSlateService = $generateSlateService;
+        $this->generateApiTsInterfaceService = $generateApiTsInterfaceService;
         $this->riskidService = $riskidService;
         $this->parameterBag = $parameterBag;
     }
@@ -60,6 +64,17 @@ class GeneratorService
     public function handleGeneratorPostmanTest(array $data): string
     {
         return $this->generatePostmanTestService->generatorPostmanTest($data);
+    }
+
+    /**
+     * 生成ts的Api Interface属性校验代码
+     * @param array $data
+     * @param $responseName
+     * @return string
+     */
+    public function handleGenerateApiTsInterface(array $data, $responseName): string
+    {
+        return $this->generateApiTsInterfaceService->generateApiTsInterface($data, $responseName);
     }
 
     /**
@@ -167,7 +182,6 @@ class GeneratorService
      */
     public function handleGeneratorSlateDoc($controller): string
     {
-
         if (!$controller) {
             return $this->generateSlateService->generateDefaultSlate();
         }

@@ -27,7 +27,7 @@ class GeneratorController extends BaseController
     {
         $params = json_decode($request->getContent(),true);
 
-        // 测试用
+        // 测试校验用
 //        $this->validateNecessaryParameters($params,[
 //            'data'=>self::OBJECT_TYPE,
 //            'name'=>self::STRING_TYPE,
@@ -38,6 +38,23 @@ class GeneratorController extends BaseController
 //            'flag'=>self::BOOL_TYPE,
 //        ]);
         $result = $this->generatorService->handleGeneratorPostmanTest($params);
+
+        $response = new Response($result);
+        $response->headers->set('Content-Type', 'text/javascript');
+
+        return $response;
+    }
+
+    /**
+     * @Route("/generateTsInterface", name="生成Api响应的TypeScript Interface", methods={"POST"})
+     * @throws \Exception
+     */
+    public function executeGenerateApiTsInterface(Request $request): Response
+    {
+        $responseName = $request->query->get('name') ?? null;
+        $params = json_decode($request->getContent(),true);
+
+        $result = $this->generatorService->handleGenerateApiTsInterface($params,$responseName);
 
         $response = new Response($result);
         $response->headers->set('Content-Type', 'text/javascript');
