@@ -67,7 +67,6 @@ export default {
     this.visible = this.openFlag
   },
   methods: {
-
     // 添加一个新标签的请求
     addTag() {
       this.$refs.ruleForm.validate(valid => {
@@ -78,8 +77,9 @@ export default {
           this.$request.postTags(data).then(res => {
             if (res.status === 200) {
               this.$message.success("添加标签成功")
-              // 请求成功后 将新的数据添加到tags
-              this.tags.push(res.data.data[0])
+              // 请求成功后 将新的数据添加到tags 并关闭modal
+              this.$emit('updateModelStatus', false)
+              this.$emit('submit', res.data.data)
             } else {
               this.$message.error("添加标签失败")
             }

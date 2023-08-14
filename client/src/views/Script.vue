@@ -580,7 +580,7 @@ export default {
           fileDownload(res.data, fileName);
         }else {
           setTimeout(loadingMessage, 0);
-          message.success('脚本执行失败', 2.5)
+          message.error('脚本执行失败', 2.5)
         }
       })
     },
@@ -625,6 +625,7 @@ export default {
         newData.key = newData.id;
         // 在tags头部添加元素
         this.allTags.unshift(newData);
+        this.tmpTags.unshift(newData);
         this.$set(this, 'tags', [...this.allTags]);
       }
     },
