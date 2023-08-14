@@ -285,6 +285,9 @@ class ScriptService
         }
 
         $scriptPath = $script->getPath();
+        if (!file_exists($scriptPath)) {
+            throw ExceptionFactory::NotFoundException("脚本文件可能已经丢失");
+        }
         $command = $command . $scriptPath . ' ';
 
         $properties = $script->getProperties();
