@@ -14,6 +14,7 @@ class LogSubscriber implements EventSubscriberInterface
 {
     const FILTER_ARRAY=[
         "/functional/generatePostmanTest",
+        "/functional/generateTsInterface",
         "/functional/downloadFile"
     ];
     private OperationLogFactory $operationLogFactory;
