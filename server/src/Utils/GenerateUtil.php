@@ -65,7 +65,8 @@ class GenerateUtil
      * @param $str
      * @return array|string|string[]|null
      */
-    public static function removeController($str) {
+    public static function removeController($str)
+    {
         // 使用正则表达式匹配并替换掉末尾的 "Controller"
         return preg_replace('/Controller$/', '', $str);
     }
@@ -75,7 +76,7 @@ class GenerateUtil
      * @param $str
      * @return void
      */
-    private static function explodeSomeText($str): string
+    public static function explodeSomeText($str): string
     {
         if (strpos($str, '_') !== false) {
             $parts = explode('_', $str);
@@ -85,5 +86,31 @@ class GenerateUtil
             $str = implode('', $parts);
         }
         return $str;
+    }
+
+    /**
+     * 判断数组是关联数组还是普通数组
+     * @param $array
+     * @return bool 返回true代表是关联数组，否则是普通数组
+     */
+    public static function isArrayAssociative($array): bool
+    {
+        if (!is_array($array)) {
+            return false;
+        }
+
+        $keys = array_keys($array);
+
+        if (array_keys($keys) !== $keys) {
+            return true;
+        }
+
+        for ($i = 0; $i < count($keys); $i++) {
+            if ($i !== $keys[$i]) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
