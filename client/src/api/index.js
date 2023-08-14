@@ -25,7 +25,7 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         var url = config.url
-        if (url !== '/functional/getSystemStatus'||
+        if (url !== '/functional/getSystemStatus'&&
             url !== '/functional/getPs'){
             // 加载顶部loading
             NProgress.start()
