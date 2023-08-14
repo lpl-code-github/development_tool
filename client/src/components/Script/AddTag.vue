@@ -7,12 +7,12 @@
              cancel-text="取消"
              action=""
              :maskClosable="false"
-             :afterClose="initTagFormData"
+             :afterClose="handleCancel"
              @ok="addTag"
     >
 
       <a-form-model
-          ref="ruleForm"
+          ref="ruleForms"
           :model="newTag"
           :rules="childrenModelRules"
           :label-col="{ span: 3 }"
@@ -69,7 +69,7 @@ export default {
   methods: {
     // 添加一个新标签的请求
     addTag() {
-      this.$refs.ruleForm.validate(valid => {
+      this.$refs.ruleForms.validate(valid => {
         if (valid) {
           var data = {
             data: this.newTag
@@ -85,7 +85,6 @@ export default {
             }
           })
           this.initTagFormData()
-          this.childrenModelVisible = false;
         } else {
           return false
         }
@@ -93,19 +92,20 @@ export default {
     },
     // 重置添加新标签的子modal
     initTagFormData() {
-      this.$refs.ruleForm.resetFields();
+      this.$refs.ruleForms.resetFields();
     },
 
     /*
       向父组件传值：组件状态
      */
     handleCancel(e) {
-      this.initTagFormData()
       this.$emit('updateModelStatus', false)
+      this.initTagFormData()
+
     },
     afterClose(e) {
-      this.initTagFormData()
       this.$emit('updateModelStatus', false)
+      this.initTagFormData()
     },
   },
 };

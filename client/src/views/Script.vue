@@ -444,8 +444,14 @@ export default {
         target.tags.forEach(item => {
           if (item.id !== tagId) {
             tmpTags.push(item)
+
           }
         })
+
+        const tag = this.allTags.find(item => tagId === item.id);
+        var tmp = [...this.tmpTags];
+        tmp.push(tag)
+        this.tmpTags = [...tmp]
         target.tags = tmpTags
         this.tableData = newData
       }
@@ -559,6 +565,9 @@ export default {
     },
     // 添加新脚本
     addScript() {
+      var allTags = [...this.allTags];
+      this.allTags = [];
+      this.allTags = allTags;
       this.openAddScriptModel = true
     },
     // 执行一个脚本 并获取响应 直接下载
@@ -602,7 +611,7 @@ export default {
             var filters = [...item.filters]; // 创建 filters 的副本
 
             newData.tags.forEach(tag => {
-              const existingTag = filters.find(filter => filter.text === newData.name);
+              const existingTag = filters.find(filter => filter.text === tag.name);
               if (!existingTag) {
                 filters.push({text: tag.name, value: tag.name});
               }

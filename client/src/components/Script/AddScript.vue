@@ -1,7 +1,7 @@
 <template>
   <div>
     <!--  主modal 用来添加新的脚本  -->
-    <a-modal v-model="visible" title="添加一个新的脚本" on-ok="handleOk" :afterClose="afterClose" :maskClosable="false">
+    <a-modal v-model="visible" title="添加一个新的脚本" :on-ok="handleOk"  :afterClose="afterClose" :maskClosable="false">
       <template slot="footer">
         <a-button key="back" @click="handleCancel">
           取消
@@ -10,7 +10,7 @@
           添加
         </a-button>
       </template>
-      <a-form :form="form" :label-col="{ span: 3 }" :wrapper-col="{ span: 20}" style="width: 100%">
+      <a-form ref="mainModal" :form="form" :label-col="{ span: 3 }" :wrapper-col="{ span: 20}" style="width: 100%">
         <a-form-item label="名称" prop="name">
           <a-input
               v-decorator="['name', { rules: [{ required: true, message: 'Please input name!' },{min: 5, max: 50, message: '长度必须在 5 ～ 50', trigger: 'blur'}] }]"
@@ -257,7 +257,9 @@ export default {
     },
     // 重置添加新标签的子modal
     initTagFormData() {
-      this.$refs.ruleForm.resetFields();
+      if (this.$refs.ruleForm){
+        this.$refs.ruleForm.resetFields();
+      }
     },
 
 
