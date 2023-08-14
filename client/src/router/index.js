@@ -37,6 +37,9 @@ const routes = [
     {
         path: '/postman-test-generator', component: () => import('@/views/PostmanTestGenerator')
     },
+    {
+        path: '/ts-interface-generator', component: () => import('@/views/TsInterfaceGenerator')
+    },
     //
     // {
     //     path: '/home', component: () => import('@/views/Home')
