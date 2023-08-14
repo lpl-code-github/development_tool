@@ -71,7 +71,7 @@ export default {
       simpleSidebarData: [
         {
           key: "1",
-          icon: "code",
+          icon: "schedule",
           text: "首页",
           link: '/index'
         },
