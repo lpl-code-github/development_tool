@@ -50,7 +50,7 @@ class NewmanService
             }
 
             $postmanCollectionUrl = $this->parameterBag->get('postman_collection_url');
-            $postmanCollectionUrl = $this->parameterBag->get('test_postman_collection_url');//测试用
+//             $postmanCollectionUrl = $this->parameterBag->get('test_postman_collection_url');//测试用
             $newmanReportPath = BASE_PATH . $this->parameterBag->get("newman_report_path");
             $newmanCliOutputPath = BASE_PATH . $this->parameterBag->get("newman_cli_output");
 
