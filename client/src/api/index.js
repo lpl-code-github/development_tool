@@ -18,7 +18,8 @@ axios.defaults.timeout = 100000
 
 // 代理接口 部署时应该换为后台实际地址
 const service = axios.create({
-    baseURL: '/apis'
+    // baseURL: '/apis' // 开发环境的url
+    baseURL: 'http://localhost/tool_server/public'
 })
 
 // 请求拦截器(在请求之前进行一些配置)
