@@ -44,6 +44,9 @@ services:
       - '../src/DependencyInjection/'
       - '../src/Entity/'
       - '../src/Kernel.php'
+  App\Service\Generator\GenerateApiTsInterfaceService:
+    arguments:
+      $result: []
 #  app.cache.example:
 #    class: App\Cache\ExampleCache
 #    arguments: [ '@cache.app' ]
