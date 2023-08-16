@@ -5,74 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0222d096-929b-40cb-a84f-6bd3d4e76e5b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../server/.env" beforeDir="false" afterPath="$PROJECT_DIR$/../server/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/bin/console" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/bin/phpunit" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/public/.htaccess" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/public/index.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/resource/PostmanTestController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/resource/doc/default_slate_doc.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/resource/scripts/r1-fixtrues.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/BaseController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Functional/FileController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Functional/GeneratorController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Functional/NewmanController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Functional/RiskIdController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Functional/ScriptController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Functional/SystemController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Resource/DatabaseBackupController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Resource/NewmanTasksController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Resource/OperationLogController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Resource/ScriptsController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Controller/Resource/TagController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/DataFixtures/AppFixtures.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Dto/DatabaseBackupDto.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Dto/NewmanTaskDto.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Dto/OperationLogDto.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Dto/ScriptDto.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Entity/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Entity/DatabaseBackup.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Entity/NewmanTask.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Entity/OperationLog.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Entity/Script.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Entity/ScriptTag.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Entity/Tag.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/EventSubscriber/CorsSubscriber.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/EventSubscriber/ExceptionSubscriber.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/EventSubscriber/LogSubscriber.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Factory/DatabaseBackupFactory.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Factory/ExceptionFactory.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Factory/NewmanTaskFactory.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Factory/OperationLogFactory.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Factory/ScriptFactory.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Factory/TagFactory.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Kernel.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Repository/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Repository/DatabaseBackupRepository.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Repository/NewmanTaskRepository.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Repository/OperationLogRepository.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Repository/ScriptRepository.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Repository/ScriptTagRepository.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Repository/TagRepository.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/DB/DBService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/DatabaseBackupService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateApiTsInterfaceService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateControllerCodeService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateDtoCodeService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateFactoryCodeService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GeneratePostmanTestService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateServiceCodeService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/Generator/GenerateSlateService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/GeneratorService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/NewmanService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/NewmanTaskService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/OperationLogService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/RiskidService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/ScriptService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/SystemService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Service/TagService.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/src/Utils/GenerateUtil.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.php.meta" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.php.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.preload.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.preload.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.xml.meta" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainer.xml.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainerCompiler.log" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainerCompiler.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainerDeprecations.log" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/App_KernelDevDebugContainerDeprecations.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/annotations.map" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/annotations.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/url_generating_routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/url_generating_routes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/url_generating_routes.php.meta" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/url_generating_routes.php.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/url_matching_routes.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/url_matching_routes.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/var/cache/dev/url_matching_routes.php.meta" beforeDir="false" afterPath="$PROJECT_DIR$/../server/var/cache/dev/url_matching_routes.php.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/composer/ClassLoader.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/composer/ClassLoader.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/composer/autoload_classmap.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/composer/autoload_classmap.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/composer/autoload_files.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/composer/autoload_files.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/composer/autoload_psr4.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/composer/autoload_psr4.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/composer/autoload_static.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/composer/autoload_static.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/composer/installed.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/composer/installed.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/composer/installed.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/composer/installed.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/Configurator/AddLinesConfigurator.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/Configurator/AddLinesConfigurator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/Configurator/DockerComposeConfigurator.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/Configurator/DockerComposeConfigurator.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/Flex.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/Flex.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/InformationOperation.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/InformationOperation.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/PackageJsonSynchronizer.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/PackageJsonSynchronizer.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/Response.php" beforeDir="false" afterPath="$PROJECT_DIR$/../server/vendor/symfony/flex/src/Response.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,12 +69,13 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/views" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
     <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -184,6 +142,7 @@
       <workItem from="1692010769907" duration="7191000" />
       <workItem from="1692032038385" duration="769000" />
       <workItem from="1692067109479" duration="5943000" />
+      <workItem from="1692153487733" duration="152000" />
     </task>
     <servers />
   </component>
@@ -200,5 +159,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
   </component>
 </project>
