@@ -1,0 +1,3 @@
+<?php //App%255CController%255CFunctional%255CFileController%2523getAvailableFilename
+
+return [PHP_INT_MAX, []];
