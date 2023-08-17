@@ -137,8 +137,10 @@ class NewmanTaskService
                             $newmanTask->setActive(1);
                             $this->entityManager->persist($newmanTask);
                             $this->entityManager->flush();
+
+                            // 任务设置结束才删除缓存
+                            $this->customThingCache->delete($taskId . "_newman_process");
                         }
-                        $this->customThingCache->delete($taskId . "_newman_process");
                     }
                 }
             }
