@@ -4,12 +4,16 @@ namespace App\Service;
 
 use App\Factory\ExceptionFactory;
 use App\Service\Generator\GenerateApiTsInterfaceService;
+use App\Service\Generator\GenerateApiTsServiceCodeService;
 use App\Service\Generator\GenerateControllerCodeService;
 use App\Service\Generator\GenerateDtoCodeService;
 use App\Service\Generator\GenerateFactoryCodeService;
 use App\Service\Generator\GeneratePostmanTestService;
 use App\Service\Generator\GenerateServiceCodeService;
 use App\Service\Generator\GenerateSlateService;
+use App\Utils\GenerateUtil;
+use DateTime;
+use ZipArchive;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -30,19 +34,21 @@ class GeneratorService
     private GenerateServiceCodeService $generateServiceCodeService;
     private GenerateSlateService $generateSlateService;
     private GenerateApiTsInterfaceService $generateApiTsInterfaceService;
+    private GenerateApiTsServiceCodeService $generateApiTsServiceCodeService;
     private RiskidService $riskidService;
     private ParameterBagInterface $parameterBag;
 
     public function __construct(
-        GeneratePostmanTestService    $generatePostmanTestService,
-        GenerateDtoCodeService        $generateDtoCodeService,
-        GenerateFactoryCodeService    $generateFactoryCodeService,
-        GenerateControllerCodeService $generateControllerCodeService,
-        GenerateServiceCodeService    $generateServiceCodeService,
-        GenerateSlateService          $generateSlateService,
-        GenerateApiTsInterfaceService $generateApiTsInterfaceService,
-        RiskidService                 $riskidService,
-        ParameterBagInterface         $parameterBag
+        GeneratePostmanTestService      $generatePostmanTestService,
+        GenerateDtoCodeService          $generateDtoCodeService,
+        GenerateFactoryCodeService      $generateFactoryCodeService,
+        GenerateControllerCodeService   $generateControllerCodeService,
+        GenerateServiceCodeService      $generateServiceCodeService,
+        GenerateSlateService            $generateSlateService,
+        GenerateApiTsInterfaceService   $generateApiTsInterfaceService,
+        GenerateApiTsServiceCodeService $generateApiTsServiceCodeService,
+        RiskidService                   $riskidService,
+        ParameterBagInterface           $parameterBag
     )
     {
         $this->generatePostmanTestService = $generatePostmanTestService;
@@ -52,6 +58,7 @@ class GeneratorService
         $this->generateServiceCodeService = $generateServiceCodeService;
         $this->generateSlateService = $generateSlateService;
         $this->generateApiTsInterfaceService = $generateApiTsInterfaceService;
+        $this->generateApiTsServiceCodeService = $generateApiTsServiceCodeService;
         $this->riskidService = $riskidService;
         $this->parameterBag = $parameterBag;
     }
@@ -203,8 +210,90 @@ class GeneratorService
             }
         }
 
-        return $this->generateSlateService->generateSlateByController($controllerName,$results);
+        return $this->generateSlateService->generateSlateByController($controllerName, $results);
 
+    }
+
+
+    /**
+     * 生成TsService
+     * @param $controller
+     * @param bool $all
+     * @return string|null
+     * @throws \Exception
+     */
+    public function handleGenerateApiTsServiceCode($controller): ?string
+    {
+        $apiInfos = $this->riskidService->getApiInfos();
+        $controllerName = $this->removePhpExtension($controller);// 去掉.php的controller名称
+
+        foreach ($apiInfos as $name => $item) {
+            if ($name == '_preview_error') {
+                continue;
+            }
+            if (strpos($item['defaults']['_controller'], $controllerName) !== false) {
+                $controllerName = $this->removePhpExtension($controller);// 去掉.php的controller名称
+                $result = [
+                    'name' => $name,
+                    'path' => $item['path'],
+                    'method' => $item['method'],
+                    'function' => explode("::", $item['defaults']['_controller'])[1]
+                ];
+                $results[] = $result;
+            }
+        }
+        return $this->generateApiTsServiceCodeService->generateTsServiceCodeByController($controllerName, $results);
+    }
+
+    /**
+     * 根据全部api生成ts的ApiTsService
+     * @return string
+     * @throws \Exception
+     */
+    public function handleGenerateAllApiTsService(): string
+    {
+        $apiInfos = $this->getGroupApiInfos();
+
+        $currentDateTime = new DateTime();
+        $currentDateTime->modify('+8 hours');
+        $formattedDateTime = $currentDateTime->format('YmdHis');
+        $tmpPath = BASE_PATH . "/resource/tmp/" . $formattedDateTime . '/';
+
+        foreach ($apiInfos as $folder => $controllerInfo) {
+            // 创建File、Function、Resource等一级目录
+            $typeFolder = $tmpPath . GenerateUtil::lowerFirst($folder);
+            mkdir($typeFolder, 0777, true);
+            // 在一级目录下创建controller的二级目录
+            foreach ($controllerInfo as $controllerName => $endpoints) {
+                $objectName = GenerateUtil::removeController($controllerName);
+                $objectNameLowerFirst = GenerateUtil::lowerFirst($objectName); // 转为小写
+                $controllerFolder = $typeFolder . '/' . $objectNameLowerFirst;
+
+                // 创建controller的二级目录
+                mkdir($controllerFolder, 0777, true);
+
+                // 生成当前controller的所有api service代码
+                $tsServiceCode = $this->generateApiTsServiceCodeService->generateTsServiceCodeByController($controllerName, $endpoints);
+
+                $modelFilePath = $controllerFolder . "/api-$objectNameLowerFirst.model.ts"; // 文件路径
+                $modelFile = fopen($modelFilePath, 'w');
+                if (!$modelFile) {
+                    throw ExceptionFactory::InternalServerException("无法创建文件,$modelFilePath");
+                }
+                fclose($modelFile);
+
+
+                $serviceFilePath = $controllerFolder . "/api-$objectNameLowerFirst.service.ts"; // 文件路径
+                $serviceFile = fopen($serviceFilePath, 'w');
+                if (!$serviceFile) {
+                    throw ExceptionFactory::InternalServerException("无法打开文件,$serviceFile");
+                }
+                fwrite($serviceFile, $tsServiceCode); // 写入文件内容
+                fclose($serviceFile); // 关闭文件
+            }
+        }
+
+        return $tmpPath;
     }
 
     /**
@@ -251,5 +340,41 @@ class GeneratorService
         usleep(500000);// 防止文件复制太慢 休眠0.5秒
 
         return $destFilePath;
+    }
+
+    /**
+     * 获取Riskid所有的api信息,通过目录和controller分组
+     *
+     * @return array
+     */
+    public function getGroupApiInfos(): array
+    {
+        $results = [];
+        $apiInfos = $this->riskidService->getApiInfos();
+
+        foreach ($apiInfos as $name => $item) {
+            if (
+                $name == 'backup' ||
+                $name == 'reduction' ||
+                $name == '_preview_error'
+            ) {
+                continue;
+            }
+            $_controller = $item['defaults']['_controller'];
+
+            $start = strrpos($_controller, '\\') + 1;
+            $end = strpos($_controller, '::');
+            $controller = substr($_controller, $start, $end - $start);
+
+            $folder = explode('\\', $_controller)[2];
+
+            $results[$folder][$controller][] = [
+                'name' => $name,
+                'path' => $item['path'],
+                'method' => $item['method'],
+                'function' => explode("::", $item['defaults']['_controller'])[1]
+            ];
+        }
+        return $results;
     }
 }

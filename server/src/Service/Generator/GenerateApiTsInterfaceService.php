@@ -26,7 +26,7 @@ class GenerateApiTsInterfaceService
         $this->generateTsCode($data, $interfaceName.'Response');
         $codes = array_reverse($this->result);  // 反转
 
-        $result = "";
+        $result = "import { TokenUserResponse } from '../../../api-token-user.model';\n\n";
         foreach ($codes as $code) {
             $result .= $code . "\n";
         }
@@ -41,10 +41,14 @@ class GenerateApiTsInterfaceService
      */
     public function generateTsCode($data, string $interfaceName = '')
     {
-        $interface = "export interface " . $interfaceName . " {\n";
+        $interface = "export interface " . GenerateUtil::upperFirst($interfaceName) . " {\n";
 
         foreach ($data as $key => $value) {
-            $typeScriptType = $this->getTypeScriptType($key, $value, $interfaceName);
+            if ($key == "token_user"){
+                $typeScriptType = ': TokenUserResponse';
+            }else{
+                $typeScriptType = $this->getTypeScriptType($key, $value, $interfaceName);
+            }
             $interface .= "  $key" . $typeScriptType . ",\n";
         }
 
@@ -72,7 +76,7 @@ class GenerateApiTsInterfaceService
                 $this->generateTsCode($value, $newInterfaceName);
 
                 // 返回这个key的类型：新的Interface名
-                return ': ' . $newInterfaceName;
+                return ': ' . GenerateUtil::upperFirst($newInterfaceName);
             } else { // 数组类型
                 // 1. 如果数组为空，则返回任意类型的数组
                 if (count($value) == 0) {
@@ -92,7 +96,7 @@ class GenerateApiTsInterfaceService
                         $newInterfaceName = $interfaceName ? $interfaceName . GenerateUtil::upperFirst(GenerateUtil::explodeSomeText($key)) : GenerateUtil::upperFirst(GenerateUtil::explodeSomeText($key));
                         $this->generateTsCode($v, $newInterfaceName) . "\n";
                         // 返回这个key的类型为为新的Interface名
-                        return ': ' . $newInterfaceName . '[]'; // 默认拿到第一个就返回
+                        return ': ' . GenerateUtil::upperFirst($newInterfaceName) . '[]'; // 默认拿到第一个就返回
                     }
                 }
                 return ': []';

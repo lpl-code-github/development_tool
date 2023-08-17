@@ -5,9 +5,13 @@ namespace App\Controller\Functional;
 use App\Controller\BaseController;
 use App\Factory\ExceptionFactory;
 use App\Service\GeneratorService;
+use DateTime;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
+use ZipArchive;
 
 class GeneratorController extends BaseController
 {
@@ -60,6 +64,65 @@ class GeneratorController extends BaseController
         $response->headers->set('Content-Type', 'text/javascript');
 
         return $response;
+    }
+
+    /**
+     * @Route("/generateTsService", name="生成Ts调用api的service", methods={"GET"})
+     * @throws \Exception
+     */
+    public function executeGenerateApiTsService(Request $request): Response
+    {
+        $controller = $request->query->get('controller') ?? null;
+        $all = $request->query->get('all') ?? null;
+        if ($controller == null && $all == null){
+            throw ExceptionFactory::WrongFormatException("缺少参数");
+        }
+        if ($controller != null && $controller != "") { // 单个code
+            $result = $this->generatorService->handleGenerateApiTsServiceCode($controller);
+
+            $response = new Response($result);
+            $response->headers->set('Content-Type', 'text/javascript');
+            return $response;
+        }
+        if ($all){ // 全部 返回文件
+            $sourceFolder = $this->generatorService->handleGenerateAllApiTsService();
+            $zipFile = $sourceFolder.'.zip';
+            // 创建并打开 zip 文件
+            $zip = new ZipArchive();
+            if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+                throw ExceptionFactory::InternalServerException("无法创建压缩文件");
+            }
+
+            // 添加文件夹内容到 zip 文件
+            $files = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($sourceFolder),
+                \RecursiveIteratorIterator::LEAVES_ONLY
+            );
+
+            foreach ($files as $name => $file) {
+                if (!$file->isDir()) {
+                    $filePath = $file->getRealPath();
+                    $relativePath = substr($filePath, strlen($sourceFolder));
+
+                    $zip->addFile($filePath, $relativePath);
+                }
+            }
+            $zip->close();
+
+            $currentDateTime = new DateTime();
+            $currentDateTime->modify('+8 hours');
+            $formattedDateTime = $currentDateTime->format('YmdHis');
+
+            $response = new BinaryFileResponse($zipFile);
+            $response->headers->set('Content-Type', 'application/zip');
+            $response->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                "$formattedDateTime-generate-all-ts-service.zip"
+            );
+
+            return $response;
+        }
+        return new Response();
     }
 
     /**

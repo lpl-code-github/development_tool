@@ -113,4 +113,19 @@ class GenerateUtil
 
         return false;
     }
+
+    /**
+     * 遍历$targets，查看一个字符串是否存在以某个元素为开头的子字符串，如果有去掉并返回
+     * @param $string
+     * @param $targets
+     * @return false|mixed|string
+     */
+    public static function removePrefixFromArray($string, $targets) {
+        foreach ($targets as $prefix) {
+            if (strpos($string, $prefix) === 0) {
+                return substr($string, strlen($prefix));
+            }
+        }
+        return $string;
+    }
 }

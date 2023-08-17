@@ -1,0 +1,3 @@
+<?php //App%255CEntity%255CNewmanTask%2523getCliOutputPath
+
+return [PHP_INT_MAX, []];

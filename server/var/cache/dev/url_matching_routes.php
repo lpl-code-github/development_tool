@@ -12,6 +12,7 @@ return [
         '/functional/downloadFile' => [[['_route' => '下载一个文件', '_controller' => 'App\\Controller\\Functional\\FileController::downloadFile'], null, ['POST' => 0], null, false, false, null]],
         '/functional/generatePostmanTest' => [[['_route' => '生成POSTMAN测试', '_controller' => 'App\\Controller\\Functional\\GeneratorController::executeGeneratePostmanTest'], null, ['POST' => 0], null, false, false, null]],
         '/functional/generateTsInterface' => [[['_route' => '生成Api响应的TypeScript Interface', '_controller' => 'App\\Controller\\Functional\\GeneratorController::executeGenerateApiTsInterface'], null, ['POST' => 0], null, false, false, null]],
+        '/functional/generateTsService' => [[['_route' => '生成Ts调用api的service', '_controller' => 'App\\Controller\\Functional\\GeneratorController::executeGenerateApiTsService'], null, ['GET' => 0], null, false, false, null]],
         '/functional/generateCode' => [[['_route' => '生成Resource类型的接口代码', '_controller' => 'App\\Controller\\Functional\\GeneratorController::executeGenerateCode'], null, ['GET' => 0], null, false, false, null]],
         '/functional/generateSlateDoc' => [[['_route' => '生成slate文档', '_controller' => 'App\\Controller\\Functional\\GeneratorController::executeGenerateSlateDoc'], null, ['GET' => 0], null, false, false, null]],
         '/functional/runNewman' => [[['_route' => '进行newman测试', '_controller' => 'App\\Controller\\Functional\\NewmanController::executeRunNewman'], null, ['POST' => 0], null, false, false, null]],

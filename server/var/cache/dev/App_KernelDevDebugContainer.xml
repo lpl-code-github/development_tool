@@ -351,6 +351,7 @@
     <service id="App\Service\Generator\GenerateApiTsInterfaceService" class="App\Service\Generator\GenerateApiTsInterfaceService" autowire="true" autoconfigure="true">
       <argument type="collection"/>
     </service>
+    <service id="App\Service\Generator\GenerateApiTsServiceCodeService" class="App\Service\Generator\GenerateApiTsServiceCodeService" autowire="true" autoconfigure="true"/>
     <service id="App\Service\Generator\GenerateControllerCodeService" class="App\Service\Generator\GenerateControllerCodeService" autowire="true" autoconfigure="true"/>
     <service id="App\Service\Generator\GenerateDtoCodeService" class="App\Service\Generator\GenerateDtoCodeService" autowire="true" autoconfigure="true"/>
     <service id="App\Service\Generator\GenerateFactoryCodeService" class="App\Service\Generator\GenerateFactoryCodeService" autowire="true" autoconfigure="true"/>
@@ -367,6 +368,7 @@
       <argument type="service" id="App\Service\Generator\GenerateServiceCodeService"/>
       <argument type="service" id="App\Service\Generator\GenerateSlateService"/>
       <argument type="service" id="App\Service\Generator\GenerateApiTsInterfaceService"/>
+      <argument type="service" id="App\Service\Generator\GenerateApiTsServiceCodeService"/>
       <argument type="service" id="App\Service\RiskidService"/>
       <argument type="service" id="parameter_bag"/>
     </service>
