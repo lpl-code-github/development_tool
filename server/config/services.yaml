@@ -7,7 +7,7 @@ parameters:
   debug_router_command: 'php bin/console debug:router --format json'
   cache_clear_command: 'php bin/console cache:clear'
   cpu_usage_command: "top -bn 1 | grep '^%Cpu' | awk '{print $2+$4+$6}'"
-  top5_ps_command: "top -bn 1 | head -n 12 | tail -n +7 | grep -vE 'top|free|awk'"
+  top5_ps_command: "top -bn 1 | head -n 12 | tail -n +7 | grep -vE 'top|free|awk|grep'"
   memory_usage_command: "free | awk 'NR==2{printf \"%.2f\", $3*100/$2 }'"
   riskid_code_path: '/var/app/r1/'
   riskid_env_path: '/var/app/r1/.env'
