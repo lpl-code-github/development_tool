@@ -55,10 +55,12 @@ class GeneratorController extends BaseController
      */
     public function executeGenerateApiTsInterface(Request $request): Response
     {
-        $responseName = $request->query->get('name') ?? null;
+        $name = $request->query->get('name')??null;
+        $suffix = $request->query->get('suffix') ?? "Response";
+        $allowDepth = (int) $request->query->get('allow_depth');
         $params = json_decode($request->getContent(),true);
 
-        $result = $this->generatorService->handleGenerateApiTsInterface($params,$responseName);
+        $result = $this->generatorService->handleGenerateApiTsInterface($params, $name, $suffix, $allowDepth);
 
         $response = new Response($result);
         $response->headers->set('Content-Type', 'text/javascript');
