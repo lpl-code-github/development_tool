@@ -92,7 +92,7 @@ class GenerateTsModalService
                 // 生成interface注释(单行注释)
                 $tsInterface .= $this->generateApiTsInterfaceService->generateTsNote($function, '',$suffix. ($key+1));
                 // 生成interface 默认深度2层
-                $tsInterface .= $this->generateApiTsInterfaceService->generateSimpleApiTsInterface($value, $function.$suffix. ($key+1),false,2);
+                $tsInterface .= $this->generateApiTsInterfaceService->generateSimpleApiTsInterface($value, $function.$suffix. ($key+1),false,false,2);
             }
         }
 

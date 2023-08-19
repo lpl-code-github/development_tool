@@ -263,7 +263,8 @@ class GeneratorService
         $currentDateTime = new DateTime();
         $currentDateTime->modify('+8 hours');
         $formattedDateTime = $currentDateTime->format('YmdHis');
-        $tmpPath = BASE_PATH . "/resource/tmp/" . $formattedDateTime . '/';
+//        $tmpPath = BASE_PATH . "/resource/tmp/" . $formattedDateTime . '/';
+        $tmpPath = "/tmp/" . $formattedDateTime . '/';
 
         foreach ($apiInfos as $folder => $controllerInfo) {
             // 创建File、Function、Resource等一级目录
