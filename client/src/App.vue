@@ -106,7 +106,8 @@ export default {
             {key: "5-1", text: "代码生成器", link: "/code-generator"},
             {key: "5-2", text: "Slate生成器", link: "/slate-generator"},
             {key: "5-3", text: "PostmanTest生成器", link: "/postman-test-generator"},
-            {key: "5-4", text: "Ts Interface生成器", link: "/ts-interface-generator"}
+            {key: "5-4", text: "Ts Interface生成器", link: "/ts-interface-generator"},
+            {key: "5-5", text: "Ts Service生成器", link: "/ts-service-generator"}
           ]
         }
       ],

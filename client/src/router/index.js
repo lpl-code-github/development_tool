@@ -40,6 +40,9 @@ const routes = [
     {
         path: '/ts-interface-generator', component: () => import('@/views/TsInterfaceGenerator')
     },
+    {
+        path: '/ts-service-generator', component: () => import('@/views/TsServiceGenerator')
+    },
     //
     // {
     //     path: '/home', component: () => import('@/views/Home')

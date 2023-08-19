@@ -104,6 +104,24 @@ export const generateTsInterface = (data,param) => {
         })
         .then(res=> res)
 }
+export const generateTsServiceCode = (param) => {
+    return service
+        .request({
+            url: '/functional/generateTsService'+param,
+            method: 'get',
+        })
+        .then(res=> res)
+}
+export const generateAllTsServiceCode = () => {
+    return service
+        .request({
+            url: '/functional/generateTsService?all=true',
+            method: 'get',
+            responseType: 'blob',
+        })
+        .then(res=> res)
+}
+
 
 /*
     获取日志的请求
