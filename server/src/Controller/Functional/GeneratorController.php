@@ -60,6 +60,9 @@ class GeneratorController extends BaseController
         $allowDepth = (int) $request->query->get('allow_depth');
         $params = json_decode($request->getContent(),true);
 
+        if ($allowDepth == 0){
+            $allowDepth = 3;
+        }
         $result = $this->generatorService->handleGenerateApiTsInterface($params, $name, $suffix, $allowDepth);
 
         $response = new Response($result);
