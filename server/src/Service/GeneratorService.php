@@ -8,12 +8,12 @@ use App\Service\Generator\GenerateApiTsServiceCodeService;
 use App\Service\Generator\GenerateControllerCodeService;
 use App\Service\Generator\GenerateDtoCodeService;
 use App\Service\Generator\GenerateFactoryCodeService;
+use App\Service\Generator\GenerateTsModalService;
 use App\Service\Generator\GeneratePostmanTestService;
 use App\Service\Generator\GenerateServiceCodeService;
 use App\Service\Generator\GenerateSlateService;
 use App\Utils\GenerateUtil;
 use DateTime;
-use ZipArchive;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -37,6 +37,7 @@ class GeneratorService
     private GenerateApiTsServiceCodeService $generateApiTsServiceCodeService;
     private RiskidService $riskidService;
     private ParameterBagInterface $parameterBag;
+    private GenerateTsModalService $generateTsModalService;
 
     public function __construct(
         GeneratePostmanTestService      $generatePostmanTestService,
@@ -48,7 +49,8 @@ class GeneratorService
         GenerateApiTsInterfaceService   $generateApiTsInterfaceService,
         GenerateApiTsServiceCodeService $generateApiTsServiceCodeService,
         RiskidService                   $riskidService,
-        ParameterBagInterface           $parameterBag
+        ParameterBagInterface           $parameterBag,
+        GenerateTsModalService $generateTsModalService
     )
     {
         $this->generatePostmanTestService = $generatePostmanTestService;
@@ -61,6 +63,7 @@ class GeneratorService
         $this->generateApiTsServiceCodeService = $generateApiTsServiceCodeService;
         $this->riskidService = $riskidService;
         $this->parameterBag = $parameterBag;
+        $this->generateTsModalService = $generateTsModalService;
     }
 
     /**
@@ -76,12 +79,14 @@ class GeneratorService
     /**
      * 生成ts的Api Interface属性校验代码
      * @param array $data
-     * @param $responseName
+     * @param $name
+     * @param $suffix
+     * @param int $allowDepth
      * @return string
      */
-    public function handleGenerateApiTsInterface(array $data, $responseName): string
+    public function handleGenerateApiTsInterface(array $data, $name, $suffix, int $allowDepth = 3): string
     {
-        return $this->generateApiTsInterfaceService->generateApiTsInterface($data, $responseName);
+        return $this->generateApiTsInterfaceService->generateSimpleApiTsInterface($data, $name??'Example', $suffix, true, $allowDepth);
     }
 
     /**
@@ -227,6 +232,7 @@ class GeneratorService
         $apiInfos = $this->riskidService->getApiInfos();
         $controllerName = $this->removePhpExtension($controller);// 去掉.php的controller名称
 
+        $results=array();
         foreach ($apiInfos as $name => $item) {
             if ($name == '_preview_error') {
                 continue;
@@ -264,6 +270,7 @@ class GeneratorService
             $typeFolder = $tmpPath . GenerateUtil::lowerFirst($folder);
             mkdir($typeFolder, 0777, true);
             // 在一级目录下创建controller的二级目录
+
             foreach ($controllerInfo as $controllerName => $endpoints) {
                 $objectName = GenerateUtil::removeController($controllerName);
                 $objectNameLowerFirst = GenerateUtil::lowerFirst($objectName); // 转为小写
@@ -272,17 +279,33 @@ class GeneratorService
                 // 创建controller的二级目录
                 mkdir($controllerFolder, 0777, true);
 
-                // 生成当前controller的所有api service代码
-                $tsServiceCode = $this->generateApiTsServiceCodeService->generateTsServiceCodeByController($controllerName, $endpoints);
-
-                $modelFilePath = $controllerFolder . "/api-$objectNameLowerFirst.model.ts"; // 文件路径
-                $modelFile = fopen($modelFilePath, 'w');
-                if (!$modelFile) {
-                    throw ExceptionFactory::InternalServerException("无法创建文件,$modelFilePath");
+                /**
+                 * 1. 先生成modal
+                 */
+                $requestModalSuffix = 'Param';
+                $responseModalSuffix = 'Response';
+                // 1.1 请求体的modal文件
+                $requestModalResult = $this->generateTsModalService->getModalResult($endpoints, $requestModalSuffix, 'request');
+                $requestModelFilePath = $controllerFolder . "/api-$objectNameLowerFirst.request.model.ts";
+                $requestModelFile = fopen($requestModelFilePath, 'w');
+                if (!$requestModelFile) {
+                    throw ExceptionFactory::InternalServerException("无法创建文件,$requestModelFile");
                 }
-                fclose($modelFile);
+                fwrite($requestModelFile, $requestModalResult); // 写入文件内容
+                fclose($requestModelFile);
+                // 1.2 响应体modal的文件
+                $responseModalResult = $this->generateTsModalService->getModalResult($endpoints, $responseModalSuffix,'response');
+                $responseModelFilePath = $controllerFolder . "/api-$objectNameLowerFirst.response.model.ts";
+                $responseModelFile = fopen($responseModelFilePath, 'w');
+                if (!$responseModelFile) {
+                    throw ExceptionFactory::InternalServerException("无法创建文件,$responseModelFile");
+                }
+                fwrite($responseModelFile, $responseModalResult); // 写入文件内容
+                fclose($responseModelFile);
 
 
+                // 生成当前controller的所有api service代码
+                $tsServiceCode = $this->generateApiTsServiceCodeService->generateTsServiceCodeByController($controllerName, $endpoints,true, $requestModalSuffix, $responseModalSuffix);
                 $serviceFilePath = $controllerFolder . "/api-$objectNameLowerFirst.service.ts"; // 文件路径
                 $serviceFile = fopen($serviceFilePath, 'w');
                 if (!$serviceFile) {
