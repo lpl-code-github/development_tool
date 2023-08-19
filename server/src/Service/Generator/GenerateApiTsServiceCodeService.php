@@ -6,10 +6,37 @@ use App\Utils\GenerateUtil;
 class GenerateApiTsServiceCodeService
 {
 
-    public function generateTsServiceCodeByController(string $controller, array $data): string
+    /**
+     * 生成Ts的api Service
+     * @param string $controller
+     * @param array $data
+     * @param bool $isType
+     * @param string $requestModalSuffix
+     * @param string $responseModalSuffix
+     * @return string
+     */
+    public function generateTsServiceCodeByController(string $controller, array $data, $isType = false, string $requestModalSuffix = "", string $responseModalSuffix = ""): string
     {
-        $objectName = GenerateUtil::removeController($controller);
+        // 如果要生成type  开头import需要引入
+        $requestTypes =array();
+        $responseTypes =array();
+        if ($isType){
+            foreach ($data as $item) {
+                $function = GenerateUtil::upperFirst(
+                    GenerateUtil::removePrefixFromArray(
+                        $item['function'],
+                        array("handle","execute")
+                    )
+                );
 
+                $requestTypes[] = $function.$requestModalSuffix;
+                $responseTypes[] = $function.$responseModalSuffix;
+            }
+        }
+        $requestType = count($requestTypes)!=0 ? implode(', ', $requestTypes) : "";
+        $responseType = count($responseTypes)!=0 ? implode(', ', $responseTypes) : "";
+
+        $objectName = GenerateUtil::removeController($controller);
         $objectNameLowerFirst = GenerateUtil::lowerFirst($objectName); // 转为小写
 
         $tsServiceCode = <<<EOF
@@ -19,7 +46,8 @@ class GenerateApiTsServiceCodeService
 import { Injectable } from '@angular/core';
 import { ApiConnectionService } from '../../../api-connection.service';
 import { Observable } from 'rxjs';
-import { } from './api-$objectNameLowerFirst.model';
+import { $requestType } from './api-$objectNameLowerFirst.request.model';
+import { $responseType } from './api-$objectNameLowerFirst.response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +68,7 @@ EOF;
                 )
             );
 
-            $generateFunctionCode = $this->generateFunction($objectName, $name, $path, $method, $function);
+            $generateFunctionCode = $this->generateFunction($name, $path, $method, $function, $isType, $requestModalSuffix,$responseModalSuffix);
 
             $tsServiceCode .= $generateFunctionCode."\n\n";
         }
@@ -50,14 +78,15 @@ EOF;
 
     /**
      * 创建单个请求的function
-     * @param $objectName
      * @param $name
      * @param $path
      * @param $method
      * @param $function
+     * @param string $requestModalSuffix
+     * @param string $responseModalSuffix
      * @return string
      */
-    private function generateFunction($objectName, $name, $path, $method, $function): string
+    private function generateFunction($name, $path, $method, $function, $isType = false, string $requestModalSuffix = "", string $responseModalSuffix = ""): string
     {
         switch ($method){
             case "GET":
@@ -79,11 +108,15 @@ EOF;
                 $operation = $method;
                 break;
         }
+
+        $requestType = $isType ? GenerateUtil::upperFirst($function).$requestModalSuffix : 'any'; // 设置参数类型
+        $responseType = $isType ? GenerateUtil::upperFirst($function).$responseModalSuffix : 'any'; // 设置返回值类型
+
         return <<<EOF
   /**
    * $name
    */  
-  public $function(data: any): Observable<any>{
+  public $function(data: $requestType): Observable<$responseType>{
     const path = '$path';
     return this.apiConnectionService.$operation(path, data);
   }
