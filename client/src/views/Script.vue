@@ -342,15 +342,19 @@ export default {
             tags: target.tags
           }
         }
+        delete target.editable;
+        this.tableData = newData;
+        Object.assign(targetCache, target);
+        this.cacheData = this.tableData.map(item => JSON.parse(JSON.stringify(item)));
+
         this.$request.putScriptData(param).then(res => {
           if (res.status === 200) {
-            delete target.editable;
-            this.tableData = newData;
-            Object.assign(targetCache, target);
-            this.cacheData = this.tableData.map(item => JSON.parse(JSON.stringify(item)));
             this.$message.success("更新成功")
           } else {
             this.$message.error("更新失败")
+            setTimeout(()=>{
+              window.location.reload()
+            },3000)
           }
         })
       }

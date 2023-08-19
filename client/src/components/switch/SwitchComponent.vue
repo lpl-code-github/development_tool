@@ -6,7 +6,7 @@
       </template>
       {{ switchText }}
     </a-tooltip>
-    <a-switch v-model="flag" @click="handleSwitch">
+    <a-switch :loading="loading" v-model="flag" @click="handleSwitch">
       <a-icon slot="checkedChildren" type="check" />
       <a-icon slot="unCheckedChildren" type="close" />
     </a-switch>
@@ -18,6 +18,10 @@
 export default {
   name: "SwitchComponent",
   props: {
+    loading: {
+      type: Boolean,
+      required: true
+    },
     flag: {
       type: Boolean,
       required: true
@@ -37,7 +41,6 @@ export default {
   },
   data() {
     return {
-      loading: false
     };
   },
   methods: {

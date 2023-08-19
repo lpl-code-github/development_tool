@@ -38,7 +38,6 @@ export default {
   watch: {
     calendarData: {
       handler: function (newVal, oldVal) {
-        console.log(newVal)
         this.getLogs(newVal)
       },
       // 深度观察监听
@@ -49,7 +48,7 @@ export default {
     await this.getLogs(new moment())
     // 监听自定义事件
     this.$bus.$on('requestCompleted', () => {
-      console.log('reloadComponent called')
+      // console.log('reloadComponent called')
       this.getLogs(new moment())
       this.calendarComponentKey += 1;
     });

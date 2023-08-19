@@ -282,15 +282,20 @@ export default {
             description:target.description
           }
         }
+
+        delete target.editable;
+        this.tableData = newData;
+        Object.assign(targetCache, target);
+        this.cacheData = newCacheData;
+
         this.$request.putDatabaseBackup(param).then(res => {
           if (res.status === 200) {
-            delete target.editable;
-            this.tableData = newData;
-            Object.assign(targetCache, target);
-            this.cacheData = newCacheData;
             this.$message.success("更新成功")
           } else {
             this.$message.error("更新失败")
+            setTimeout(()=>{
+              window.location.reload()
+            },3000)
           }
         })
       }

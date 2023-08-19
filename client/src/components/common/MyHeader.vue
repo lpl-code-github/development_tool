@@ -13,6 +13,7 @@
         <a-popover ref="popover" title="开关" placement="topLeft" trigger="click" @click="handleQuickSwitch" :visible="popoverIsShow">
           <template slot="content">
             <SwitchComponent
+                :loading = "switchLoading"
                 v-for="(item,index) in switchComponentData"
                 :key="index"
                 :type="item.type"
@@ -32,7 +33,7 @@
 
     </a-layout-header>
 
-    <Statistics :system-status="systemStatus" :top5ps="psInfo" @updateDrawerStatus="getDrawerStatus" :open-flag="openDrawer"></Statistics>
+    <Statistics :statisticLoading="statisticLoading" :system-status="systemStatus" :top5ps="psInfo" @updateDrawerStatus="getDrawerStatus" :open-flag="openDrawer"></Statistics>
   </div>
 </template>
 
@@ -53,6 +54,8 @@ export default {
       buttonSize: "small",
       loadingUpdateSystem: false,
       popoverIsShow: false,
+      switchLoading: false, // 开关的loading
+      statisticLoading: true,
       switchComponentData: [
         {
           tooltipText: "此开关打开，开发环境下，后端API将返回Symfony的报错信息，否则返回json的报错信息",
@@ -118,11 +121,14 @@ export default {
      */
     // 初始化switch开关的状态
     async handleQuickSwitch() {
+      this.popoverIsShow = true
+      this.switchLoading = true;
       await this.$request.switchStatus().then(res => {
         if (res.status !== 200) {
           this.popoverIsShow = false
+          this.switchLoading = false;
         }else {
-          this.popoverIsShow = true
+          this.switchLoading = false;
           var data = res.data.data
           var temp = this.switchComponentData
           temp.forEach(componentDataItem => {
@@ -159,17 +165,19 @@ export default {
       this.$request.getDockerSystemStatus().then(res=>{
         if (res.status !== 200) {
           this.$message.error("获取容器硬件信息失败");
-          this.openDrawer = false
+          this.loadingUpdateSystem = false
+          this.statisticLoading = true
         }else {
           this.systemStatus = res.data
-
+          this.loadingUpdateSystem = true
+          this.statisticLoading = false
           this.$request.getPs().then(res =>{
             if (res.status !== 200) {
               this.$message.error("获取容器硬件信息失败");
-              this.openDrawer = false
+              this.loadingUpdateSystem = false
             }else {
               this.psInfo = res.data
-              this.openDrawer = true
+              this.loadingUpdateSystem = false
             }
           })
         }
@@ -178,6 +186,8 @@ export default {
 
     // 打开抽屉
     handleOpenDrawer(){
+      this.openDrawer = true
+      this.loadingUpdateSystem = true
       this.handleGetDockerInfo()
     },
     // 获取抽屉状态
