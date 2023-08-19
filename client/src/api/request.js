@@ -95,12 +95,12 @@ export const getSlateDoc = (param) => {
         })
         .then(res=> res)
 }
-export const generateTsInterface = (param,name) => {
+export const generateTsInterface = (data,param) => {
     return service
         .request({
-            url: '/functional/generateTsInterface?name='+name,
+            url: '/functional/generateTsInterface'+param,
             method: 'post',
-            data: param
+            data: data
         })
         .then(res=> res)
 }
