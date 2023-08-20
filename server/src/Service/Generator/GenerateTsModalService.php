@@ -43,8 +43,11 @@ class GenerateTsModalService
         foreach ($endpoints as $endpoint){
             if ($endpoint['method'] == "ANY"){
                 $endpoint['method'] = "GET";
-            }elseif($endpoint['method'] == "PATCH|PUT"){
+            }elseif($endpoint['method'] == "PATCH|PUT" || $endpoint['method'] == "PUT|PATCH"){
                 $endpoint['method'] = "PUT";
+            }
+            if ($endpoint['method'] == "GET" && $type == 'request'){ // get请求过滤掉，不定义请求时的interface modal
+                continue;
             }
             // 通过path和method去找记录
             $recordApiInfo = $this->entityManager->getRepository(RecordApiInfo::class)->findOneBy(

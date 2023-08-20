@@ -29,8 +29,13 @@ class GenerateApiTsServiceCodeService
                     )
                 );
 
-                $requestTypes[] = $function.$requestModalSuffix;
+                // 不导入get的请求类型，已经默认设置为array
+                if (!($item['method'] == "GET" || $item['method'] == "ANY")){
+                    $requestTypes[] = $function.$requestModalSuffix;
+                }
+
                 $responseTypes[] = $function.$responseModalSuffix;
+
             }
         }
         $requestType = count($requestTypes)!=0 ? implode(', ', $requestTypes) : "";
@@ -82,6 +87,7 @@ EOF;
      * @param $path
      * @param $method
      * @param $function
+     * @param bool $isType
      * @param string $requestModalSuffix
      * @param string $responseModalSuffix
      * @return string
@@ -90,12 +96,15 @@ EOF;
     {
         switch ($method){
             case "GET":
+            case "ANY":
                 $operation = "get";
                 break;
             case "POST":
                 $operation = "post";
                 break;
             case "PUT":
+            case "PATCH|PUT":
+            case "PUT|PATCH":
                 $operation = "put";
                 break;
             case "DELETE":
@@ -111,6 +120,10 @@ EOF;
 
         $requestType = $isType ? GenerateUtil::upperFirst($function).$requestModalSuffix : 'any'; // 设置参数类型
         $responseType = $isType ? GenerateUtil::upperFirst($function).$responseModalSuffix : 'any'; // 设置返回值类型
+
+        if ($operation == "get" && $isType){
+            $requestType = "{key: string, value: null|string|string[]}[]";
+        }
 
         return <<<EOF
   /**

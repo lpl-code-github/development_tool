@@ -66,12 +66,15 @@ EOF;
     {
         switch ($method){
             case "GET":
+            case "ANY":
                 $operation = "Get";
                 break;
             case "POST":
                 $operation = "Create";
                 break;
             case "PUT":
+            case "PATCH|PUT":
+            case "PUT|PATCH":
                 $operation = "Edit";
                 break;
             case "DELETE":
