@@ -95,6 +95,7 @@ export default {
               fileDownload(res.data, fileName);
             } else {
               message.error('导出失败', 2.5)
+              setTimeout(loadingMessage, 0);
             }
           })
         },
