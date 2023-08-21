@@ -226,31 +226,6 @@ export default {
           }
         })
       }, 500)
-      this.$request.getR1Api().then(res => {
-        if (res.status !== 200) {
-          this.$message.error("接口信息获取失败");
-          // this.$emit('updateDrawerStatus', false)
-          this.showApiInfoSkeleton = true
-        } else {
-          var data = res.data.data;
-          this.visible = true
-          this.apiInfo = data
-
-          var temp = [];
-          for (var key in data.sum.detail) {
-            var newObj = {
-              value: data.sum.detail[key],
-              name: key
-            };
-            temp.push(newObj);
-          }
-          this.apiCountInfo = temp
-
-          this.showApiInfoSkeleton = false
-
-          this.echartsSetOption()
-        }
-      })
     },
 
     echartsSetOption() {
@@ -286,6 +261,7 @@ export default {
     },
 
     afterVisibleChange(val) {
+      this.$emit('updateDrawerStatus', val)
       // console.log('visible', val);
     },
   }

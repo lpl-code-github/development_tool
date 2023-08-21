@@ -4,18 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0222d096-929b-40cb-a84f-6bd3d4e76e5b" name="Changes" comment="增加新的页面、路由、菜单栏：生成tsService的代码">
-      <change afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+    <list default="true" id="0222d096-929b-40cb-a84f-6bd3d4e76e5b" name="Changes" comment="1、修改get请求的参数&#10;2、修复一些已知问题">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/Index.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/api/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/common/MyHeader.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/common/MyHeader.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/preview/Statistics.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/preview/Statistics.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/switch/SwitchComponent.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/switch/SwitchComponent.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Backup.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Backup.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Newman.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Newman.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/Script.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Script.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/config/services.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/config/services.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,7 +122,9 @@
       <workItem from="1692067109479" duration="5943000" />
       <workItem from="1692153487733" duration="2053000" />
       <workItem from="1692158129687" duration="2059000" />
-      <workItem from="1692460022228" duration="14111000" />
+      <workItem from="1692460022228" duration="14514000" />
+      <workItem from="1692520784735" duration="1649000" />
+      <workItem from="1692607011811" duration="321000" />
     </task>
     <task id="LOCAL-00001" summary="修改开发环境跨域代理的目标接口地址">
       <created>1692460108620</created>
@@ -174,7 +168,42 @@
       <option name="project" value="LOCAL" />
       <updated>1692464764771</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="增加tmp文件目录">
+      <created>1692474449560</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1692474449560</updated>
+    </task>
+    <task id="LOCAL-00008" summary="增加过滤的进程">
+      <created>1692474460364</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1692474460364</updated>
+    </task>
+    <task id="LOCAL-00009" summary="优化前端一些较慢的步骤，增加loading">
+      <created>1692474535057</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1692474535057</updated>
+    </task>
+    <task id="LOCAL-00010" summary="导出失败 关闭loadingMessage">
+      <created>1692524329340</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1692524329340</updated>
+    </task>
+    <task id="LOCAL-00011" summary="1、修改get请求的参数&#10;2、修复一些已知问题">
+      <created>1692524366891</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1692524366891</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -231,6 +260,11 @@
     <MESSAGE value="修改接口默认的allowDepth" />
     <MESSAGE value="增加后缀可选，深度选择以及参数拼接" />
     <MESSAGE value="增加新的页面、路由、菜单栏：生成tsService的代码" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加新的页面、路由、菜单栏：生成tsService的代码" />
+    <MESSAGE value="增加tmp文件目录" />
+    <MESSAGE value="增加过滤的进程" />
+    <MESSAGE value="优化前端一些较慢的步骤，增加loading" />
+    <MESSAGE value="导出失败 关闭loadingMessage" />
+    <MESSAGE value="1、修改get请求的参数&#10;2、修复一些已知问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="1、修改get请求的参数&#10;2、修复一些已知问题" />
   </component>
 </project>
