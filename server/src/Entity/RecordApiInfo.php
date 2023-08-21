@@ -119,8 +119,7 @@ class RecordApiInfo
 
     public function getRequest()
     {
-        $temp = str_replace("/", "", $this->request??'[]');
-        return json_decode($temp, true);
+        return json_decode($this->request??"[]", true);
     }
 
     public function setRequest($request): self
@@ -131,8 +130,7 @@ class RecordApiInfo
 
     public function getResponse()
     {
-        $temp = str_replace("/", "", $this->response??'[]');
-        return json_decode($temp, true);
+        return json_decode($this->response??"[]", true);
     }
 
     public function setResponse($response): self
